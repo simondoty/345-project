@@ -1,0 +1,17 @@
+To build crono, run `ant` from the toplevel directory.
+
+To run crono:
+  cd bin
+  java crono.Crono [<file>]
+
+Type Inferencing will print out for each command executed. 
+
+To show the process of unification use command (set infer_print true)
+To cycle through the steps of unification use command (set infer_cycling true)
+In order to turn those off substitute false for true on the same commands.
+
+This will show each step of the unification process for all commands executed. If you are cycling it will print out what is on each stack for every cycle.
+
+To exit the program use command (quit)
+
+All source files are located in src/crono. All output files are put in bin/.

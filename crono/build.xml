@@ -1,0 +1,55 @@
+<project name="Crono: A new language of sorts" default="main">
+  <property environment="env"/>
+
+  <target name="clean">
+    <delete dir="bin/crono"/>
+  </target>
+
+  <path id="crono.classpath">
+    <pathelement location="./bin/"/>
+  </path>
+
+  <target name="crono">
+    <mkdir dir="bin"/>
+    <javacc target="src/crono/Parser.jj"
+            javacchome="${env.JAVACC_HOME}"
+            outputdirectory="./src/crono"/>
+    <javac srcdir="./src" destdir="./bin"/>
+  </target>
+
+  <target name="main" depends="clean,crono" />
+
+  <path id="test.classpath">
+    <pathelement location="./bin/"/>
+    <pathelement location="/usr/share/java/junit.jar"/>
+  </path>
+
+  <target name="buildtest">
+    <mkdir dir="bin"/>
+    <javac srcdir="test" destdir="bin"/>
+  </target>
+
+  <target name="test" depends="clean,crono,buildtest">
+    <junit fork="yes" haltonfailure="yes">
+      <classpath refid="test.classpath"/>
+      <formatter type="brief" usefile="false" />
+
+      <batchtest fork="yes">
+        <fileset dir="./test" includes="*Test.java"/>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="preso">
+    <delete file="doc/preso.aux"/>
+    <delete file="doc/preso.log"/>
+    <delete file="doc/preso.toc"/>
+    <delete file="preso.pdf"/>
+    <exec dir="doc/" executable="pdflatex">
+      <arg line="-halt-on-error preso.tex"/>
+    </exec>
+    <exec dir="." executable="mv">
+      <arg line="doc/preso.pdf ."/>
+    </exec>
+  </target>
+</project>

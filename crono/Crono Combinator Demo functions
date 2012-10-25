@@ -1,0 +1,4 @@
+(define pradd (x z) (<y> (<b> (cond (= 0) (<k> z)) (<b> (<s> (<b> + (<k> 1)) ) (<c> <b> pred))) x))
+(define pexp (x z) (<y> (<b> (cond (= 0) (<k> 1)) (<b> (<s> (<b> * (<k> x)) ) (<c> <b> pred))) z))
+(define pmult (x z) (<y> (<b> (cond (= 0) (<k> 0)) (<b> (<s> (<b> + (<k> z)) ) (<c> <b> pred))) x))
+(define fact (x) (<y> (<b> (cond (= 0) (<k> 1)) (<b> (<s> (*)  ) (<c> <b> pred))) x))
