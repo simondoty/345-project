@@ -1,0 +1,156 @@
+/* Ethan Petuchowski    EID: ecp456     CSID: ethanp    */
+
+PARSER_BEGIN(Parser)
+
+    import java.io.*;
+    import java.util.*;
+
+    public class Parser {
+        public static void main(String args[]) throws ParseException {
+            Parser parser = new Parser (System.in);
+            System.out.println(parser.expr());
+            //parser.output();
+        }
+    }
+
+PARSER_END(Parser)
+
+SKIP:
+{
+    " "
+  | "\t"
+  | "\n"
+  | "\r"
+  | <"%" (~["\n","\r"])* ("\n"|"\r")>
+}
+
+TOKEN:
+{
+    < LAMBDA : "lambda" >
+  | < LET    : "let"    >
+}
+
+TOKEN:
+{
+    < LPAR : "(" >
+  | < RPAR : ")" >
+  | < NUMBER : (["-"])? (["0"-"9"])+ ("." (["0"-"9"])+)?
+              |(["-"])? "." (["0"-"9"])+ >
+  | < OP:    ["-", "+", "*", "/"] >
+  | < SYMBOL : ["a"-"z", "A"-"Z", "~", "`", "!", "@", "#", "$", "/", "^", "&",
+                "*", "_", "-", "=", "+", "{", "}", "[", "]", "|", "\\", ":",
+                ";", "<", ">", ",", ".", "?", "'", "\""](["a"-"z", "A"-"Z",
+                "0"-"9", "~", "`", "!", "@", "#", "$", "/", "^", "&", "*", "_",
+                "-", "=", "+", "{", "}", "[", "]", "|", "\\", ":", ";", "<",
+                ">", ",", ".", "?", "'", "\""])* >
+
+
+}
+
+TOKEN:
+{
+  < ERROR : ~[] >
+}
+
+/*
+Atom atom():
+{ Token n; }
+{
+    n = <NUMBER> { return new CronoNumber(Long.valueOf(n.image)); }
+  | n = <SYMBOL>      { return Symbol.valueOf(n.image); }
+}
+
+Cons list():
+{
+  Atom a;
+  Cons c;
+  List<CronoType> l = new ArrayList<CronoType>();
+}
+{ <LET> {} }
+*/
+
+void output() :
+{ Token n; }
+{
+    <LET>       { System.out.print("let "); output(); }
+  | <EOF>       { System.out.print("eof \n"); }
+  | <NUMBER>    { System.out.print("num "); output(); }
+  | <LPAR>      { System.out.print("lpr "); output(); }
+  | <RPAR>      { System.out.print("rpr "); output(); }
+  | <SYMBOL>    { System.out.print("sym "); output(); }
+  | <LAMBDA>    { System.out.print("lam "); output(); }
+  | <OP>        { System.out.print("op "); output(); }
+}
+
+String let() :
+{ Token n; }
+{
+    <LPAR>
+    <LPAR>
+n = <SYMBOL> { String A = "(" + n.toString() + ") "; String B = expr(); }
+{ String let = A + " " + B; return let; }
+
+}
+
+String lambda() :
+{ Token n; }
+{
+    <LAMBDA>
+    <LPAR>
+n = <SYMBOL> { String A = n.toString(); }
+    <RPAR>
+{ return A; }
+}
+
+/*
+String body() :
+{ Token n; }
+{
+}
+*/
+
+String expr() :
+{
+  Token n; 
+  String v;
+}
+
+{
+/* CASE : LET */
+    LOOKAHEAD(2) <LPAR> 
+                 <LET>
+                 <LPAR><LPAR>   { String A = "((lambda (" + expr() + ") ";
+                                  String B = expr(); }
+                 <RPAR><RPAR>   { String C = expr(); }
+                 <RPAR>         { A += C + ") " + B + ")"; return A; }
+
+/* CASE : LAMBDA */
+  | LOOKAHEAD(2) <LPAR>
+                 <LAMBDA>
+                 <LPAR>     { String A = "(lambda (" + expr() + ") "; }
+                 <RPAR>     { A += expr() + ")"; }
+                 <RPAR>     { return A; }
+
+/* CASE : ELSEWISE */
+  | LOOKAHEAD(2) <LPAR>
+             n = <OP>       { String B = "(" + n.toString() + " " + expr(); }
+           ( v = expr()     { B += " " + v; }  )+
+                 <RPAR>     { B += ")"; return B; }
+  | LOOKAHEAD(2) <LPAR>
+             n = <SYMBOL>   { String app = "(" + n.toString(); }
+           ( v = expr()     { app += " " + v; } )*
+                 <RPAR>     { app += ")"; return app; }
+  |          n = <NUMBER>   { String B = n.toString(); return B; } 
+  |          n = <SYMBOL>   { String C = n.toString(); return C; }
+
+}
+
+String opVal() :
+{Token n; }
+{
+  n = <SYMBOL> { return n.toString(); }
+| n = <NUMBER> { return n.toString(); }
+}
+
+
+
