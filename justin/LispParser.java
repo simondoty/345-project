@@ -2,12 +2,12 @@ public class LispParser {
 	
 	// ******************************************
 	public static void main(String[] args) {
-		Interpret("5");
+		InterpreterTest();
 
 	}
 	
 	// ******************************************
-    public static void Interpret(String s_) {
+    public static void InterpreterTest() {
 	    System.out.println("-------- test 1: atom of 5 eval() -------");
 		// parse and build a tree of SExprs.
 		SExpr exprRoot = new NumericAtom(5);
