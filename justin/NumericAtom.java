@@ -13,8 +13,7 @@ public class NumericAtom extends Atom {
 	// *************************************************
 	// override SExpr's eval() method.
 	public Object eval() {
-	  return val;
-		
+	  return val;		
 	}
 	
 	// *************************************************

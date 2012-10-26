@@ -5,5 +5,6 @@ public abstract class SExpr {
 	// has to return an Object, because all of the children are different.
 	// (some might eval to Strings, numbers, lists, etc.)
 	public abstract Object eval();
+	//public abstract void replaceParam(SymbolAtom parameter, SExpr argument);
 
 }

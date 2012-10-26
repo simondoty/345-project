@@ -1,4 +1,5 @@
 // Symbol class used for parsed symbols like x, or f5, etc.
+
 public class SymbolAtom extends Atom {
 	private String sym = "";
 	
@@ -9,10 +10,21 @@ public class SymbolAtom extends Atom {
     	
     }
 	 
+	public String toString () {
+		return sym;
+	}
 	// ****************************************
     // eval method does symbol lookup within environment, then upward, until it finds it.
 	public Object eval() {
 	 return lookup();
+		
+	}	
+	
+	// ****************************************
+    // equals - tests to see if two symbols are equal
+	public boolean equals(SymbolAtom other) {
+	 System.out.println("Inside symbol equals....");		
+	 return (this.sym.toString().equals(other.sym.toString()));
 		
 	}
 	
@@ -22,8 +34,7 @@ public class SymbolAtom extends Atom {
 	  // then look in parent environment.
 	  // then parent environment.... and so on until found.
 	  // return valueOf(sym);
-	  return null;
-		
+	  return null;		
 	}
 
 }

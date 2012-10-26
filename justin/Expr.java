@@ -2,13 +2,13 @@ import java.util.ArrayList;
 
 // expression class.  first parameter is function.  everything afterward is a list of arguments.
 public class Expr extends SExpr {
-	private SExpr func;
+	private SExpr op;
 	private ArrayList<SExpr> args = null;
 	
 	// ****************************************
 	// constructor used when parsing get the function.
-    public Expr(SExpr func_) {
-      func = func_;
+    public Expr(SExpr op_) {
+      op = op_;
       args = new ArrayList<SExpr>();
     	
     }
@@ -16,14 +16,27 @@ public class Expr extends SExpr {
 	// ****************************************
     // add argument. also used when parsing.
 	public void AddArg(SExpr arg_) {
-	  args.add(arg_);
-		
+	  args.add(arg_);		
 	}
 	
 	// *****************************************
+	// replace method; replaces symbols that match parameter with argument value
+	public void replaceParam(SymbolAtom parameter, SExpr argument) {
+		for(int i = 0; i < this.args.size(); i++) {
+			if(this.args.get(i).equals(parameter)) {
+				this.args.set(i, argument);
+			}
+		}
+	
+	}
+	
+	
+	
+	// *****************************************
 	// eval called during interpretation.
-	public Object eval() {
-	  Object f = func.eval();
+	
+	public NumericAtom eval() {
+	  Object f = op.eval();
 		
 	  // --------------------- addition -------------------------------
 	  if(f.equals("+")) {
@@ -165,7 +178,7 @@ public class Expr extends SExpr {
 		  }
 		  
 		  // evaluate
-		  AtomList l = (AtomList) evald;
+		  /*AtomList l = (AtomList) evald;
 		 
 		  if(l.size() == 0) {
 			  throw new IllegalStateException("function car's list argument was empty.");			  
@@ -174,8 +187,8 @@ public class Expr extends SExpr {
 			  // car wants first item.
 			  return l.GetItem(0);	  
 	  
-		  }
-		  
+		  }*/
+	return new NumericAtom(0);	  
 	  } else {
 		  throw new IllegalStateException("unknown function " + f);
 		  

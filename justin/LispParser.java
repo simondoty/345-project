@@ -88,7 +88,18 @@ public class LispParser {
 	    e.AddArg( e2 );
 	
 		System.out.println(e.eval());
-	    	
+	    
+	    System.out.println("-------- test 7 - (( lambda (x) x) 3)---------"); 
+	    
+	    //e = new Expr(new StringAtom("x"));
+	    SExpr s  = new SymbolAtom("x");
+	    //e.AddArg( new SymbolAtom("x"));
+	    //e.AddArg( new SymbolAtom("x"));
+	    
+	    FunctionExpr function = new FunctionExpr(new SymbolAtom("x"), s, new NumericAtom(3));
+	    
+	    System.out.println(function.getBody());
+	    
     }
     
 }
