@@ -21,7 +21,7 @@ public class AtomList extends SExpr {
 	// *****************************************
 	public Object eval() {
 	  // calling eval() on a list just returns the list. nothing special.
-	  return lst;
+	  return this;
 		
 	}
 	

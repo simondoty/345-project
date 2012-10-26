@@ -40,13 +40,15 @@ public class LispParser {
 		System.out.println(e.eval());
 	    
 	
-	    System.out.println("-------- test 4 - nested eval (* (+ 5 4) (- 6 3)) ---------");
+	    System.out.println("-------- test 4 - nested eval (* (+ 5 4 3 1) (- 6 3)) ---------");
 
-	    // build (+ 5 4)
+	    // build (+ 5 4 3 1)
 	    Expr e3 = new Expr( new StringAtom("+") );
 	    e3.AddArg( new NumericAtom(5));
 	    e3.AddArg( new NumericAtom(4));
-	
+	    e3.AddArg( new NumericAtom(3));
+	    e3.AddArg( new NumericAtom(1));	    
+	    
 	    // build (- 6 3)
 	    e2 = new Expr( new StringAtom("-") );
 	    e2.AddArg( new NumericAtom(6) );
@@ -59,8 +61,34 @@ public class LispParser {
 	    
 		System.out.println(e.eval());
 	    
-	    
 		
+	    System.out.println("-------- test 5 - car ('(7 3 4)) ---------");
+	    AtomList l = new AtomList();
+	    l.Add( new NumericAtom(7) );
+	    l.Add( new NumericAtom(3) );
+	    l.Add( new NumericAtom(4) );
+		
+	    e = new Expr( new StringAtom("car"));
+	    e.AddArg(l);
+	    
+		System.out.println(e.eval());
+	    
+	    System.out.println("-------- test 6 - (* 3 (car ('(7 3 4))) ---------");
+	    
+	    l = new AtomList();
+	    l.Add( new NumericAtom(7) );
+	    l.Add( new NumericAtom(3) );
+	    l.Add( new NumericAtom(4) );
+		
+	    e2 = new Expr( new StringAtom("car"));
+	    e2.AddArg(l);
+	    
+	    e = new Expr( new StringAtom("*") );
+	    e.AddArg( new NumericAtom(3) );
+	    e.AddArg( e2 );
+	
+		System.out.println(e.eval());
+	    	
     }
     
 }
