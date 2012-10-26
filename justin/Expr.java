@@ -102,7 +102,7 @@ public class Expr extends SExpr {
 		  
 		  return( new NumericAtom(d1 - d2) );
 		  
-	      // ----------------- subtraction ------------------------
+	      // ----------------- multiplication ------------------------
 	  } else if(f.equals("*")) {
 		  if(args.size() != 2) {
 			  throw new IllegalStateException("function * expected exactly 2 arguments, got " + args.size());
