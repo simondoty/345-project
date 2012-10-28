@@ -82,6 +82,7 @@ void output() :
   | <OP>        { System.out.print("op "); output(); }
 }
 
+/* Not used */
 String let() :
 { Token n; }
 {
@@ -92,6 +93,7 @@ n = <SYMBOL> { String A = "(" + n.toString() + ") "; String B = expr(); }
 
 }
 
+/* Not used */
 String lambda() :
 { Token n; }
 {
@@ -114,37 +116,45 @@ String expr() :
   Token n; 
   String v;
 }
-
 {
-/* CASE : LET */
-    LOOKAHEAD(2) <LPAR> 
+/* CASE : LET; current form: (let (( param  expr )) expr ) */
+    LOOKAHEAD(2) <LPAR>
                  <LET>
-                 <LPAR><LPAR>   { String A = "((lambda (" + expr() + ") ";
+                 <LPAR><LPAR>   { String A = "((lambda (" + parameter() + ") ";
                                   String B = expr(); }
                  <RPAR><RPAR>   { String C = expr(); }
                  <RPAR>         { A += C + ") " + B + ")"; return A; }
 
-/* CASE : LAMBDA */
+/* CASE : LAMBDA; current form: (lambda ( param ) expr )*/
   | LOOKAHEAD(2) <LPAR>
                  <LAMBDA>
-                 <LPAR>     { String A = "(lambda (" + expr() + ") "; }
+                 <LPAR>     { String A = "(lambda (" + parameter() + ") "; }
                  <RPAR>     { A += expr() + ")"; }
                  <RPAR>     { return A; }
 
-/* CASE : ELSEWISE */
+
+/* CASE : OPeration; current form: ( <OP> expr (expr)+ )
+            E.g. (+ 3 3) ; (* 3 5 6 8); etc.            */
   | LOOKAHEAD(2) <LPAR>
              n = <OP>       { String B = "(" + n.toString() + " " + expr(); }
            ( v = expr()     { B += " " + v; }  )+
                  <RPAR>     { B += ")"; return B; }
+
+/* CASE : Function Application; current form: ( (expr)+ ) <== Warning: VERY GENERAL
+            E.g. (F1 2 5) ; (23 ** 2| 3) <-Goes Through! */
   | LOOKAHEAD(2) <LPAR>
              v = expr()   { String app = "(" + v; }
            ( v = expr()     { app += " " + v; } )*
                  <RPAR>     { app += ")"; return app; }
-  |          n = <NUMBER>   { String B = n.toString(); return B; } 
-  |          n = <SYMBOL>   { String C = n.toString(); return C; }
 
+/* CASE : NUMBER: could be Positive, Negative, Float, or Integer */
+  |          n = <NUMBER>   { String B = n.toString(); return B; } 
+
+/* CASE : SYMBOL: anything but Parentheses */
+  |          n = <SYMBOL>   { String C = n.toString(); return C; }
 }
 
+/* Not used */
 String opVal() :
 {Token n; }
 {
@@ -153,4 +163,12 @@ String opVal() :
 }
 
 
-
+/* A Parameter for a Let or Lambda expr must be a <SYMBOL>
+        This just converts that to a string */
+String parameter() :
+{
+    Token n;
+}
+{
+    n = <SYMBOL> { return n.toString(); }
+}
