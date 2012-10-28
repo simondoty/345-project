@@ -9,7 +9,7 @@ PARSER_BEGIN(Parser)
         public static void main(String args[]) throws ParseException {
             Parser parser = new Parser (System.in);
             System.out.println(parser.expr());
-            //parser.output();
+          //  parser.output();
         }
     }
 
@@ -111,47 +111,39 @@ String body() :
 }
 */
 
+String javaLambda() :
+{ Token n; String v; }
+{ {return "";}
+}
+
+
 String expr() :
 {
   Token n; 
   String v;
 }
 {
-/* CASE : LET; current form: (let (( param  expr )) expr ) */
-    LOOKAHEAD(2) <LPAR>
-                 <LET>
-                 <LPAR><LPAR>   { String A = "((lambda (" + parameter() + ") ";
-                                  String B = expr(); }
-                 <RPAR><RPAR>   { String C = expr(); }
-                 <RPAR>         { A += C + ") " + B + ")"; return A; }
+    <LPAR><LPAR><LAMBDA>
+                    <LPAR>
+                n = <SYMBOL> {
+                           // System.out.println(n.toString());
+                            SymbolAtom symAtom = new SymbolAtom(n.toString());
+                             }
+                    <RPAR>
+                    <SYMBOL> /* TODO this should also allow lambda's,
+                                        that'll need to be its own method */
+                             {
+                            SExpr s = new SymbolAtom(n.toString());
+                             }
+                    <RPAR>
+                n = <SYMBOL> { NumericAtom numAtom = new NumericAtom(Integer.getInteger(n.toString())); }
+                    <RPAR>   {
+                            FunctionExpr function = new FunctionExpr(symAtom, s, numAtom);
+                            System.out.println(function.getBody);
+                            return "";
+                             }
+    | <EOF>
 
-/* CASE : LAMBDA; current form: (lambda ( param ) expr )*/
-  | LOOKAHEAD(2) <LPAR>
-                 <LAMBDA>
-                 <LPAR>     { String A = "(lambda (" + parameter() + ") "; }
-                 <RPAR>     { A += expr() + ")"; }
-                 <RPAR>     { return A; }
-
-
-/* CASE : OPeration; current form: ( <OP> expr (expr)+ )
-            E.g. (+ 3 3) ; (* 3 5 6 8); etc.            */
-  | LOOKAHEAD(2) <LPAR>
-             n = <OP>       { String B = "(" + n.toString() + " " + expr(); }
-           ( v = expr()     { B += " " + v; }  )+
-                 <RPAR>     { B += ")"; return B; }
-
-/* CASE : Function Application; current form: ( (expr)+ ) <== Warning: VERY GENERAL
-            E.g. (F1 2 5) ; (23 ** 2| 3) <-Goes Through! */
-  | LOOKAHEAD(2) <LPAR>
-             v = expr()   { String app = "(" + v; }
-           ( v = expr()     { app += " " + v; } )*
-                 <RPAR>     { app += ")"; return app; }
-
-/* CASE : NUMBER: could be Positive, Negative, Float, or Integer */
-  |          n = <NUMBER>   { String B = n.toString(); return B; } 
-
-/* CASE : SYMBOL: anything but Parentheses */
-  |          n = <SYMBOL>   { String C = n.toString(); return C; }
 }
 
 /* Not used */
