@@ -19,23 +19,44 @@ public class Expr extends SExpr {
 	  args.add(arg_);		
 	}
 	
+	public String toString() {
+		String result = "(";
+		result += op;
+		for( SExpr arg : args){			
+			result += " " + arg;			
+		}	
+		result += ")";
+		return result;
+	}
+	
 	// *****************************************
 	// replace method; replaces symbols that match parameter with argument value
-	public void replaceParam(SymbolAtom parameter, SExpr argument) {
+	public boolean replaceParam(SymbolAtom parameter, SExpr argument) {
 		
 		for(int i = 0; i < this.args.size(); i++) {
-			System.out.println("Inside replaceParam Expr");
+		
+			System.out.println("Inside replaceParam Expr");			
+			if(!(this.args.get(i) instanceof NumericAtom)) {				
+							
+				// if not a symbolatom, and is an expr, recursively call replaceParam
+				if( this.args.get(i) instanceof Expr){
+					System.out.println("Inside if expr recursive call within replaceParam Expr");
+					((Expr)(this.args.get(i))).replaceParam( parameter, argument);
+				}
+				else if( ((SymbolAtom)(this.args.get(i))).equals(parameter)) {
+					System.out.println("Inside if within replaceParam Expr");
+					this.args.set(i, argument);
+				}
 			
-			// if not a symbolatom, and is an expr, recursively call replaceParam
-			if( this.args.get(i) instanceof Expr){
-				System.out.println("Inside if expr recursive call within replaceParam Expr");
-				((Expr)(this.args.get(i))).replaceParam( parameter, argument);
-			}
-			else if( ((SymbolAtom)(this.args.get(i))).equals(parameter)) {
-				System.out.println("Inside if within replaceParam Expr");
-				this.args.set(i, argument);
-			}
-		}	
+			}			
+		}
+		// after replacing symbols with argument, check if any symobls are remaining, if so,
+		// return false so the Expr isn't evaluated
+		for(int i = 0; i < this.args.size(); i++) {
+			if(this.args.get(i) instanceof SymbolAtom)
+				return false;
+		}
+		return true;			
 	}
 	
 	
@@ -52,12 +73,12 @@ public class Expr extends SExpr {
 			  throw new IllegalStateException("function + expected at least 1 argument. got " + args.size());
 		  }
 		  
-		  double sum = 0;
+		  int sum = 0;
 		  
 		  for(SExpr e: args) {
 			  Object evald = e.eval();
 			    
-			  if(evald instanceof Double) {
+			  if(evald instanceof Integer) {
                 // if worked out to be a double, then ok.
 				  
 			  // if worked out to a numeric atom, instead of a number, re-evaluate into just a number object.
@@ -70,7 +91,7 @@ public class Expr extends SExpr {
 			  }
 			  
 			  // argument ok, so add it.
-			  double d = Double.parseDouble( evald.toString() );
+			  int d = Integer.parseInt( evald.toString() );
 			  
 			  sum = sum + d;
 			  
@@ -85,14 +106,14 @@ public class Expr extends SExpr {
 		  }
 		  
 		  
-		  double diff = 0;
+		  int diff = 0;
 		  
 		  // evaluate the two arguments.  boil them down into doubles.
 		  Object arg1evald = args.get(0).eval();
 		  Object arg2evald = args.get(1).eval();
 		  
 		  // handle arg1
-		  if( arg1evald instanceof Double) {
+		  if( arg1evald instanceof Integer) {
 		  			  // ok 
 			  
 		  }
@@ -106,7 +127,7 @@ public class Expr extends SExpr {
 
 		  
 		  // handle arg2
-		  if( arg2evald instanceof Double){ 
+		  if( arg2evald instanceof Integer){ 
 			  // ok 
 
 		  } else if(arg2evald instanceof NumericAtom) {
@@ -118,8 +139,8 @@ public class Expr extends SExpr {
 		  }
 
 		  
-		  Double d1 = (Double) arg1evald;
-		  Double d2 = (Double) arg2evald;
+		  Integer d1 = (Integer) arg1evald;
+		  Integer d2 = (Integer) arg2evald;
 		  
 		  return( new NumericAtom(d1 - d2) );
 		  
@@ -130,14 +151,14 @@ public class Expr extends SExpr {
 		  }
 		  
 		  
-		  double prod = 0;
+		  int prod = 0;
 		  
 		  // evaluate the two arguments.  boil them down into doubles.
 		  Object arg1evald = args.get(0).eval();
 		  Object arg2evald = args.get(1).eval();
 		  
 		  // handle arg1
-		  if( arg1evald instanceof Double) {
+		  if( arg1evald instanceof Integer) {
 			  // ok 
 			  
 		  }
@@ -151,7 +172,7 @@ public class Expr extends SExpr {
 
 		  
 		  // handle arg2
-		  if( arg2evald instanceof Double){ 
+		  if( arg2evald instanceof Integer){ 
 			  // ok 
 
 		  } else if(arg2evald instanceof NumericAtom) {
@@ -163,8 +184,8 @@ public class Expr extends SExpr {
 		  }
 
 		  
-		  Double d1 = (Double) arg1evald;
-		  Double d2 = (Double) arg2evald;
+		  Integer d1 = (Integer) arg1evald;
+		  Integer d2 = (Integer) arg2evald;
 		  
 		  return( new NumericAtom(d1 * d2) );
 		  		  

@@ -11,7 +11,7 @@ public class SymbolAtom extends Atom {
     }
 	 
 	public String toString () {
-		return sym;
+		return sym + "";
 	}
 	// ****************************************
     // eval method does symbol lookup within environment, then upward, until it finds it.

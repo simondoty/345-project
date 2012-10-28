@@ -126,7 +126,7 @@ public class LispParser {
 	    
 	    System.out.println(function3.getBody());
 	    
-	    System.out.println("-------- test 9 - (( lambda (x) (- x  (- x x)) 3)---------");
+	    System.out.println("-------- test 10 - (( lambda (x) (- x  (- x x)) 3)---------");
 	    
 	    e = new Expr(new StringAtom("-"));	
 	    e.AddArg( new SymbolAtom("x"));	    
@@ -138,6 +138,42 @@ public class LispParser {
 	    FunctionExpr function4 = new FunctionExpr(new SymbolAtom("x"), e, new NumericAtom(3));
 	    
 	    System.out.println(function4.getBody());
+	    
+	    System.out.println("-------- test 11 - (( lambda (x) (- x  (* x x)) 3)---------");
+	    
+	    e = new Expr(new StringAtom("-"));	
+	    e.AddArg( new SymbolAtom("x"));	    
+	    e2 = new Expr(new StringAtom("*"));	  
+	    e2.AddArg( new SymbolAtom("x"));
+	    e2.AddArg( new SymbolAtom("x"));
+	    e.AddArg( e2);
+	    
+	    FunctionExpr function5 = new FunctionExpr(new SymbolAtom("x"), e, new NumericAtom(3));
+	    
+	    System.out.println(function5.getBody());
+	    
+	    System.out.println("-------- test 12 - (( lambda (x) (- x  (* 4 x)) 3)---------");
+	    
+	    e = new Expr(new StringAtom("-"));	
+	    e.AddArg( new SymbolAtom("x"));	    
+	    e2 = new Expr(new StringAtom("*"));	  
+	    e2.AddArg( new NumericAtom(4));
+	    e2.AddArg( new SymbolAtom("x"));
+	    e.AddArg( e2);
+	    
+	    FunctionExpr function6 = new FunctionExpr(new SymbolAtom("x"), e, new NumericAtom(3));
+	    
+	    System.out.println(function6.getBody());	    
+	    
+	    System.out.println("-------- test 14 - (( lambda (y) (+ y x)) 3)---------");
+	    
+	    e = new Expr(new StringAtom("+"));	
+	    e.AddArg( new SymbolAtom("y"));   
+	    e.AddArg( new SymbolAtom("x"));	
+	    
+	    FunctionExpr function7 = new FunctionExpr(new SymbolAtom("y"), e, new NumericAtom(3));
+	    
+	    System.out.println(function7.getBody());
 	    
     }
     

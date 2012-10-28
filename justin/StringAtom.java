@@ -8,10 +8,13 @@ public class StringAtom extends Atom {
 		
 	}
 	
+	public String toString() {	
+		return val;
+	}
+	
 	// override SExpr's eval() method.
 	public String eval() {
-	  return val;
-		
+	   return val;		
 	}
 
 }

@@ -4,7 +4,6 @@ public class FunctionExpr extends SExpr {
     
     //name of the function (if it has one)
 	//private SymbolAtom name;	
-	
 	//this could change to a list of parameters
 	private SymbolAtom parameter;
 	
@@ -30,8 +29,12 @@ public class FunctionExpr extends SExpr {
 	public FunctionExpr (SymbolAtom parameter, SExpr body, SExpr argument) {
 		System.out.println("Inside Function Constructor");
 		
+		/********************************  SET PARAMETER *****************************/
 		// parameter has to be a SymbolAtom
 		this.parameter = parameter; // this is a SymbolAtom with "x"
+		
+		
+		/********************************  GET ARGUMENT *****************************/
 		
 		// SExpr argument could be three things: Expr, Atom, FunctionExpr
 		// if argument is an Expr, evaluate the expression. Could return an SExpr, or Atom
@@ -40,43 +43,45 @@ public class FunctionExpr extends SExpr {
 			this.argument = ((Expr)(argument)).eval(); //downcast from SExpr to Expr
 		}
 		
+		// if function expr, evaluate the function expression first
+		if(argument instanceof FunctionExpr) {
+			System.out.println("argument is instance of FunctionExpr - inside if");	    
+			this.argument = ((Expr)(argument)).eval(); //downcast from SExpr to Expr
+		}
+		
 		// argument must be an atom
 		else {
 		     System.out.println("argument is instance of Atom - inside if");	 
-			this.argument = argument;
+			 this.argument = argument;
 		}
 		
-		// add case for argument being a FunctionExpr
+	
+		/********************************  SET BODY *****************************/
 		
-		this.body = body;
 		// body can either be a FunctionExpr, Atom, or Expr
-		//if body is an Expr
-		if (this.body instanceof Expr) {
-			System.out.println("Going to call replaceParam....");			
-			((Expr)(this.body)).replaceParam(this.parameter, this.argument);	//downcast from SExpr to Expr
+		this.body = body;		
+	    boolean canEvaluate = false;
+	    
+		if (this.body instanceof Expr) {					
+			canEvaluate = ((Expr)(this.body)).replaceParam(this.parameter, this.argument);	//downcast from SExpr to Expr
 		} 
 		
 		// if body is an Atom, only replace if it's a SymbolAtom
-		else if(this.body instanceof SymbolAtom) {
-			System.out.println("inside body instanceof symbol....");
-			System.out.println("Printing this.body: " +  this.body + " and parameter: " + parameter);				
-			if( ((SymbolAtom)(this.body)).equals(parameter)) {
-				System.out.println("Inside body.equals parameter....");		
+		else if (this.body instanceof SymbolAtom) {					
+			if(((SymbolAtom)(this.body)).equals(parameter)) {
+				//System.out.println("Inside body.equals parameter....");		
+				canEvaluate = true;
 				this.body = argument;
-			}
-			// else check if body is in the repository 			
+			}				
 		}	
 		
-		//System.out.println("Returned from replaceParam. Calling body.eval()");	    
-	    
-	    
-	    System.out.println(this.body);
-	    if( this.body instanceof Expr)
+		// eval only if Expr has no unresolved symbols
+	    if( this.body instanceof Expr && canEvaluate)
 			this.body = ((Expr)(this.body)).eval();	    	    	    
 	}	
 	public String toString() {
-		return "";
 		
+		return body.toString();		
 	}
 
 }
