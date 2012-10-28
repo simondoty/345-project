@@ -7,6 +7,11 @@ public class FunctionExpr extends SExpr {
 	//this could change to a list of parameters
 	private SymbolAtom parameter;
 	
+	
+	// need to flush out implementation of how to set this (through parsing) 
+	private boolean hasParent;
+	
+	
 	//private Environment currentEnvironment;
 	//private FunctionExpr parent;
 	private String environment;

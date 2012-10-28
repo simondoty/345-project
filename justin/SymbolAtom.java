@@ -6,8 +6,7 @@ public class SymbolAtom extends Atom {
 	// ****************************************
 	// constructor used when parsing
     public SymbolAtom(String s_) {
-      sym = s_;
-    	
+      sym = s_;    	
     }
 	 
 	public String toString () {

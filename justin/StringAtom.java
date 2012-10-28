@@ -1,7 +1,6 @@
 // string atom handles parsed strings
 public class StringAtom extends Atom {
-	private String val = "";
-	
+	private String val = "";	
 
 	public StringAtom(String val_) {
 		val = val_;
