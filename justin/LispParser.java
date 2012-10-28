@@ -89,7 +89,7 @@ public class LispParser {
 	
 		System.out.println(e.eval());
 	    
-	    System.out.println("-------- test 7 - (( lambda (x) x) 3)---------"); 
+	  System.out.println("-------- test 7 - (( lambda (x) x) 3)---------");
 	    
 	    //e = new Expr(new StringAtom("x"));
 	    SExpr s  = new SymbolAtom("x");

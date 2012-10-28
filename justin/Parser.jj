@@ -8,10 +8,8 @@ PARSER_BEGIN(Parser)
     public class Parser {
         public static void main(String args[]) throws ParseException {
             Parser parser = new Parser (System.in);
-            
-	   
             System.out.println(parser.expr());
-            //parser.output();
+          //  parser.output();
         }
     }
 
@@ -84,6 +82,7 @@ void output() :
   | <OP>        { System.out.print("op "); output(); }
 }
 
+/* Not used */
 String let() :
 { Token n; }
 {
@@ -94,6 +93,7 @@ n = <SYMBOL> { String A = "(" + n.toString() + ") "; String B = expr(); }
 
 }
 
+/* Not used */
 String lambda() :
 { Token n; }
 {
@@ -111,53 +111,42 @@ String body() :
 }
 */
 
+String javaLambda() :
+{ Token n; String v; }
+{ {return "";}
+}
+
+
 String expr() :
 {
   Token n; 
   String v;
 }
 {
-/* CASE : LET */
-    LOOKAHEAD(2) <LPAR> 
-                 <LET>
-                 <LPAR><LPAR>   { String A = "((lambda (" + expr() + ") ";
-                                  String B = expr(); }
-                 <RPAR><RPAR>   { String C = expr(); }
-                 <RPAR>         { A += C + ") " + B + ")"; return A; }
-
-/* CASE : LAMBDA */
-  | LOOKAHEAD(2) <LPAR>
-                 <LAMBDA>
-                 <LPAR>     { String A = "(lambda (" + expr() + ") "; }
-                 <RPAR>     { A += expr() + ")"; }
-                 <RPAR>     { return A; }
-
-/* CASE : ELSEWISE */
-
-  | LOOKAHEAD(2) <LPAR>
-             n = <OP>       { String B = "(" + n.toString() + " " + expr(); }
-           ( v = expr()     { B += " " + v; }  )+
-                 <RPAR>     { B += ")"; return B; }
-
-  | LOOKAHEAD(2) <LPAR>
-             n = <SYMBOL>   { String app = "(" + n.toString(); }
-           ( v = expr()     { app += " " + v; } )*
-                 <RPAR>     { app += ")"; return app; }
-  |          n = <NUMBER>   { String B = n.toString(); return B; } 
-  |          n = <SYMBOL>   { String C = n.toString(); return C; }
+    <LPAR><LPAR><LAMBDA>
+                    <LPAR>
+                n = <SYMBOL> {
+                           // System.out.println(n.toString());
+                            SymbolAtom symAtom = new SymbolAtom(n.toString());
+                             }
+                    <RPAR>
+                    <SYMBOL> /* TODO this should also allow lambda's,
+                                        that'll need to be its own method */
+                             {
+                            SExpr s = new SymbolAtom(n.toString());
+                             }
+                    <RPAR>
+                n = <SYMBOL> { NumericAtom numAtom = new NumericAtom(Integer.getInteger(n.toString())); }
+                    <RPAR>   {
+                            FunctionExpr function = new FunctionExpr(symAtom, s, numAtom);
+                            System.out.println(function.getBody);
+                            return "";
+                             }
+    | <EOF>
 
 }
 
-int getVal() :
-{ Token n; }
-{
-  <LPAR>
-  <OP>
-  n = <NUMBER> { int a = Integer.parseInt(n.toString()) ; }
-  n = <NUMBER> { int b = Integer.parseInt(n.toString()) ; }
-  {System.out.println( a + b) ; }
-  <RPAR>
-}  
+/* Not used */
 String opVal() :
 {Token n; }
 {
@@ -166,4 +155,12 @@ String opVal() :
 }
 
 
-
+/* A Parameter for a Let or Lambda expr must be a <SYMBOL>
+        This just converts that to a string */
+String parameter() :
+{
+    Token n;
+}
+{
+    n = <SYMBOL> { return n.toString(); }
+}
