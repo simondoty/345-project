@@ -8,8 +8,6 @@ PARSER_BEGIN(Parser)
     public class Parser {
         public static void main(String args[]) throws ParseException {
             Parser parser = new Parser (System.in);
-            
-	   
             System.out.println(parser.expr());
             //parser.output();
         }
@@ -116,6 +114,7 @@ String expr() :
   Token n; 
   String v;
 }
+
 {
 /* CASE : LET */
     LOOKAHEAD(2) <LPAR> 
@@ -133,14 +132,12 @@ String expr() :
                  <RPAR>     { return A; }
 
 /* CASE : ELSEWISE */
-
   | LOOKAHEAD(2) <LPAR>
              n = <OP>       { String B = "(" + n.toString() + " " + expr(); }
            ( v = expr()     { B += " " + v; }  )+
                  <RPAR>     { B += ")"; return B; }
-
   | LOOKAHEAD(2) <LPAR>
-             n = <SYMBOL>   { String app = "(" + n.toString(); }
+             v = expr()   { String app = "(" + v; }
            ( v = expr()     { app += " " + v; } )*
                  <RPAR>     { app += ")"; return app; }
   |          n = <NUMBER>   { String B = n.toString(); return B; } 
@@ -148,16 +145,6 @@ String expr() :
 
 }
 
-int getVal() :
-{ Token n; }
-{
-  <LPAR>
-  <OP>
-  n = <NUMBER> { int a = Integer.parseInt(n.toString()) ; }
-  n = <NUMBER> { int b = Integer.parseInt(n.toString()) ; }
-  {System.out.println( a + b) ; }
-  <RPAR>
-}  
 String opVal() :
 {Token n; }
 {
