@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 // expression class.  first parameter is function.  everything afterward is a list of arguments.
 public class Expr extends SExpr {
+
 	private SExpr op;
 	private ArrayList<SExpr> args = null;
 	
@@ -9,8 +10,7 @@ public class Expr extends SExpr {
 	// constructor used when parsing get the function.
     public Expr(SExpr op_) {
       op = op_;
-      args = new ArrayList<SExpr>();
-    	
+      args = new ArrayList<SExpr>();    	
     }
 	 
 	// ****************************************
@@ -22,12 +22,20 @@ public class Expr extends SExpr {
 	// *****************************************
 	// replace method; replaces symbols that match parameter with argument value
 	public void replaceParam(SymbolAtom parameter, SExpr argument) {
+		
 		for(int i = 0; i < this.args.size(); i++) {
-			if(this.args.get(i).equals(parameter)) {
+			System.out.println("Inside replaceParam Expr");
+			
+			// if not a symbolatom, and is an expr, recursively call replaceParam
+			if( this.args.get(i) instanceof Expr){
+				System.out.println("Inside if expr recursive call within replaceParam Expr");
+				((Expr)(this.args.get(i))).replaceParam( parameter, argument);
+			}
+			else if( ((SymbolAtom)(this.args.get(i))).equals(parameter)) {
+				System.out.println("Inside if within replaceParam Expr");
 				this.args.set(i, argument);
 			}
-		}
-	
+		}	
 	}
 	
 	
@@ -85,7 +93,7 @@ public class Expr extends SExpr {
 		  
 		  // handle arg1
 		  if( arg1evald instanceof Double) {
-			  // ok 
+		  			  // ok 
 			  
 		  }
 		  else if(arg1evald instanceof NumericAtom) {
@@ -160,7 +168,7 @@ public class Expr extends SExpr {
 		  
 		  return( new NumericAtom(d1 * d2) );
 		  		  
-	  // ------------------------- car or first --------------------------
+	  // ------------------------- car or first --------------------------	  
 	  } else if(f.equals("car") || f.equals("first")  ) {
 		  // car/first expect a single argument.
 		  if(args.size() != 1) {

@@ -89,16 +89,55 @@ public class LispParser {
 	
 		System.out.println(e.eval());
 	    
-	  System.out.println("-------- test 7 - (( lambda (x) x) 3)---------");
+	  System.out.println("-------- test 7 - (( lambda (x) (+  x x)) 3)---------");
 	    
-	    //e = new Expr(new StringAtom("x"));
+	    e = new Expr(new StringAtom("+"));
 	    SExpr s  = new SymbolAtom("x");
-	    //e.AddArg( new SymbolAtom("x"));
-	    //e.AddArg( new SymbolAtom("x"));
+	    e.AddArg( new SymbolAtom("x"));
+	    e.AddArg( new SymbolAtom("x"));
 	    
-	    FunctionExpr function = new FunctionExpr(new SymbolAtom("x"), s, new NumericAtom(3));
+	    FunctionExpr function = new FunctionExpr(new SymbolAtom("x"), e, new NumericAtom(3));
 	    
-	    System.out.println(function.getBody());
+	   System.out.println(function.getBody());
+	    
+	   System.out.println("-------- test 8 - (( lambda (x) (+ x  (+ x x)) 3)---------");
+	    
+	    e = new Expr(new StringAtom("+"));	
+	    e.AddArg( new SymbolAtom("x"));	    
+	    e2 = new Expr(new StringAtom("+"));	  
+	    e2.AddArg( new SymbolAtom("x"));
+	    e2.AddArg( new SymbolAtom("x"));
+	    e.AddArg( e2);
+	    
+	    FunctionExpr function2 = new FunctionExpr(new SymbolAtom("x"), e, new NumericAtom(3));
+	    
+	    System.out.println(function2.getBody());
+	    
+	    System.out.println("-------- test 9 - (( lambda (x) (* x  (* x x)) 3)---------");
+	    
+	    e = new Expr(new StringAtom("*"));	
+	    e.AddArg( new SymbolAtom("x"));	    
+	    e2 = new Expr(new StringAtom("*"));	  
+	    e2.AddArg( new SymbolAtom("x"));
+	    e2.AddArg( new SymbolAtom("x"));
+	    e.AddArg( e2);
+	    
+	    FunctionExpr function3 = new FunctionExpr(new SymbolAtom("x"), e, new NumericAtom(3));
+	    
+	    System.out.println(function3.getBody());
+	    
+	    System.out.println("-------- test 9 - (( lambda (x) (- x  (- x x)) 3)---------");
+	    
+	    e = new Expr(new StringAtom("-"));	
+	    e.AddArg( new SymbolAtom("x"));	    
+	    e2 = new Expr(new StringAtom("-"));	  
+	    e2.AddArg( new SymbolAtom("x"));
+	    e2.AddArg( new SymbolAtom("x"));
+	    e.AddArg( e2);
+	    
+	    FunctionExpr function4 = new FunctionExpr(new SymbolAtom("x"), e, new NumericAtom(3));
+	    
+	    System.out.println(function4.getBody());
 	    
     }
     
