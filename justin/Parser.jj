@@ -121,29 +121,46 @@ String expr() :
 {
   Token n; 
   String v;
+  SExpr s;
+  int i;
 }
 {
-    <LPAR><LPAR><LAMBDA>
-                    <LPAR>
-                n = <SYMBOL> {
-                           // System.out.println(n.toString());
-                            SymbolAtom symAtom = new SymbolAtom(n.toString());
-                             }
-                    <RPAR>
-                    <SYMBOL> /* TODO this should also allow lambda's,
-                                        that'll need to be its own method */
-                             {
-                            SExpr s = new SymbolAtom(n.toString());
-                             }
-                    <RPAR>
-                n = <SYMBOL> { NumericAtom numAtom = new NumericAtom(Integer.getInteger(n.toString())); }
-                    <RPAR>   {
-                            FunctionExpr function = new FunctionExpr(symAtom, s, numAtom);
-                            System.out.println(function.getBody);
-                            return "";
-                             }
-    | <EOF>
+    /* Case: Lambda Expression */
+        <LPAR>
+        <LPAR>
+        <LAMBDA>
+        <LPAR>
+    v = parameter() { SymbolAtom symAtom = new SymbolAtom(v); }
+        <RPAR>
+    s = body()
+        <RPAR>
+    n = <NUMBER> {  NumericAtom numAtom = new NumericAtom(Integer.parseInt(n.toString())); }
+        <RPAR>   {
+                    FunctionExpr function = new FunctionExpr(symAtom, s, numAtom);
+                    System.out.println(function.getBody());
+                    return "";
+                 }
+|   /* Case: just a number */
+    n = <NUMBER> {  i = Integer.parseInt(n.toString()); }
+| <EOF>
 
+}
+
+SExpr body() :
+{ Token n; String v; SExpr s; int i; }
+{
+
+    /* Case: body = SYMBOL */
+    n = <SYMBOL>{ v = n.toString(); s = new SymbolAtom(v); return s; }
+
+|   n = <NUMBER>{ i = Integer.parseInt(n.toString()); s = new NumericAtom(i); return s; }
+
+|   /* Generalize Case 2: body = something like (+ x (+ x x)) OR (+ x x) */
+        <LPAR>
+    n = <OP>    { v = n.toString(); Expr e = new Expr(new StringAtom(v)); }
+
+    (s = body()  { e.AddArg(s); })+
+    <RPAR> { return e; }
 }
 
 /* Not used */
