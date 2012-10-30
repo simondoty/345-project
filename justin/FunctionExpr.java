@@ -83,9 +83,12 @@ public class FunctionExpr extends SExpr {
 		// eval only if Expr has no unresolved symbols
 	    if( this.body instanceof Expr && canEvaluate)
 			this.body = ((Expr)(this.body)).eval();	    	    	    
-	}	
+	}
+
+	// will return the string equivalent of body which uses run-time type to return
+	// correct string:q
+
 	public String toString() {
-		
 		return body.toString();		
 	}
 
