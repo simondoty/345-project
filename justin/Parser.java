@@ -6,7 +6,6 @@
         public static void main(String args[]) throws ParseException {
             Parser parser = new Parser (System.in);
             System.out.println(parser.expr());
-
           //  parser.output();
         }
 
@@ -130,7 +129,7 @@ String body() :
       case NUMBER:
         /* Case: just a number */
             n = jj_consume_token(NUMBER);
-                    i = Integer.parseInt(n.toString());
+                    i = Integer.parseInt(n.toString()); {if (true) return null;}
         break;
       case LPAR:
       case SYMBOL:
@@ -140,6 +139,7 @@ String body() :
         break;
       case 0:
         jj_consume_token(0);
+         {if (true) return null;}
         break;
       default:
         jj_la1[1] = jj_gen;

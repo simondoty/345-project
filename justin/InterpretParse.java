@@ -36,7 +36,7 @@ public class InterpretParse
                 myParser.ReInit(parseStream);
                 try
                 {
-                    System.out.print(myParser.expr());
+                    System.out.println(myParser.expr());
                 } catch (Exception e)
                 {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

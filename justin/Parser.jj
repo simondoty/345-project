@@ -9,7 +9,6 @@ PARSER_BEGIN(Parser)
         public static void main(String args[]) throws ParseException {
             Parser parser = new Parser (System.in);
             System.out.println(parser.expr());
-
           //  parser.output();
         }
     }
@@ -144,13 +143,13 @@ SExpr expr() :
                     return evaluated;
                  }
 |   /* Case: just a number */
-    n = <NUMBER> {  i = Integer.parseInt(n.toString()); }
+    n = <NUMBER> {  i = Integer.parseInt(n.toString()); return null; }
 
 |   /* Case: just an Expr, e.g. (+ 3 3) */
     s = body() { System.out.println(((Expr)(s)).eval()); return s; }
 
 
-| <EOF>
+| <EOF> {return null;}
 
 }
 
