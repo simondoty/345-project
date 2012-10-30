@@ -1,3 +1,14 @@
-x
-x
-
+Inside Function Constructor
+argument is instance of Atom - inside if
+Inside symbol equals....
+4
+Inside Function Constructor
+argument is instance of Atom - inside if
+Inside replaceParam Expr
+Inside symbol equals....
+Inside if within replaceParam Expr
+Inside replaceParam Expr
+Inside symbol equals....
+Inside if within replaceParam Expr
+8
+8
