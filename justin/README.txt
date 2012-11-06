@@ -5,7 +5,7 @@ Class hierarchy is like so:
 SExpr (abstract)
 |
 ---------------------------------------------------
-|                             |                   |
+|                                               |                   |
 Atom  (abstract)           AtomList             Expr
 |
 NumericAtom

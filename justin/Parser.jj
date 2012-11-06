@@ -88,7 +88,7 @@ String let() :
 {
     <LPAR>
     <LPAR>
-n = <SYMBOL> { String A = "(" + n.toString() + ") "; String B = expr(); }
+n = <SYMBOL> { String A = "(" + n.toString() + ") "; String B = lambdaExpr(); }
 { String let = A + " " + B; return let; }
 
 }
@@ -116,15 +116,16 @@ String javaLambda() :
 { {return "";}
 }
 
-
-String expr() :
+SExpr expr() :
 {
   Token n; 
   String v;
   SExpr s;
+  SExpr s2;
   int i;
 }
 {
+    LOOKAHEAD(2)
     /* Case: Lambda Expression */
         <LPAR>
         <LPAR>
@@ -134,15 +135,21 @@ String expr() :
         <RPAR>
     s = body()
         <RPAR>
-    n = <NUMBER> {  NumericAtom numAtom = new NumericAtom(Integer.parseInt(n.toString())); }
+    s2 = body()
         <RPAR>   {
-                    FunctionExpr function = new FunctionExpr(symAtom, s, numAtom);
-                    System.out.println(function.getBody());
-                    return "";
+                    FunctionExpr function = new FunctionExpr(symAtom, s, s2);
+                    SExpr evaluated = function.getBody();
+                    System.out.println(evaluated);
+                    return evaluated;
                  }
 |   /* Case: just a number */
-    n = <NUMBER> {  i = Integer.parseInt(n.toString()); }
-| <EOF>
+    n = <NUMBER> {  i = Integer.parseInt(n.toString()); return null; }
+
+|   /* Case: just an Expr, e.g. (+ 3 3) */
+    s = body() { System.out.println(((Expr)(s)).eval()); return s; }
+
+
+| <EOF> {return null;}
 
 }
 
@@ -156,11 +163,29 @@ SExpr body() :
 |   n = <NUMBER>{ i = Integer.parseInt(n.toString()); s = new NumericAtom(i); return s; }
 
 |   /* Generalize Case 2: body = something like (+ x (+ x x)) OR (+ x x) */
+    LOOKAHEAD(2)
         <LPAR>
     n = <OP>    { v = n.toString(); Expr e = new Expr(new StringAtom(v)); }
 
     (s = body()  { e.AddArg(s); })+
     <RPAR> { return e; }
+|      LOOKAHEAD(2)
+    /* Case: Lambda Expression */
+        <LPAR>
+        <LPAR>
+        <LAMBDA>
+        <LPAR>
+    v = parameter() { SymbolAtom symAtom = new SymbolAtom(v); }
+        <RPAR>
+    s = body()
+        <RPAR>
+    n = <NUMBER> {  NumericAtom numAtom = new NumericAtom(Integer.parseInt(n.toString())); }
+        <RPAR>   {
+                    FunctionExpr function = new FunctionExpr(symAtom, s, numAtom);
+                    SExpr evaluated = function.getBody();
+                    System.out.println(evaluated);
+                    return evaluated;
+                 }
 }
 
 /* Not used */
@@ -180,4 +205,47 @@ String parameter() :
 }
 {
     n = <SYMBOL> { return n.toString(); }
+}
+
+String lambdaExpr() :
+{
+  Token n; 
+  String v;
+}
+{
+/* CASE : LET; current form: (let (( param  lambdaExpr )) lambdaExpr ) */
+    LOOKAHEAD(2) <LPAR>
+                 <LET>
+                 <LPAR><LPAR>   { String A = "((lambda (" + parameter() + ") ";
+                                  String B = lambdaExpr(); }
+                 <RPAR><RPAR>   { String C = lambdaExpr(); }
+                 <RPAR>         { A += C + ") " + B + ")"; return A; }
+
+/* CASE : LAMBDA; current form: (lambda ( param ) lambdaExpr )*/
+  | LOOKAHEAD(2) <LPAR>
+                 <LAMBDA>
+                 <LPAR>     { String A = "(lambda (" + parameter() + ") "; }
+                 <RPAR>     { A += lambdaExpr() + ")"; }
+                 <RPAR>     { return A; }
+
+
+/* CASE : OPeration; current form: ( <OP> lambdaExpr (lambdaExpr)+ )
+            E.g. (+ 3 3) ; (* 3 5 6 8); etc.            */
+  | LOOKAHEAD(2) <LPAR>
+             n = <OP>       { String B = "(" + n.toString() + " " + lambdaExpr(); }
+           ( v = lambdaExpr()     { B += " " + v; }  )+
+                 <RPAR>     { B += ")"; return B; }
+
+/* CASE : Function Application; current form: ( (lambdaExpr)+ ) <== Warning: VERY GENERAL
+            E.g. (F1 2 5) ; (23 ** 2| 3) <-Goes Through! */
+  | LOOKAHEAD(2) <LPAR>
+             v = lambdaExpr()     { String app = "(" + v; }
+           ( v = lambdaExpr()     { app += " " + v; } )*
+                 <RPAR>     { app += ")"; return app; }
+
+/* CASE : NUMBER: could be Positive, Negative, Float, or Integer */
+  |          n = <NUMBER>   { String B = n.toString(); return B; } 
+
+/* CASE : SYMBOL: anything but Parentheses */
+  |          n = <SYMBOL>   { String C = n.toString(); return C; }
 }

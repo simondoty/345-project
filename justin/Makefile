@@ -20,3 +20,7 @@ trial: Parser.jj
 	make class
 	./test2 > myOutput.txt
 	cat myOutput.txt
+
+cwork: Parser.java
+	cat test | java Parser > myOutput.txt
+	cat myOutput.txt

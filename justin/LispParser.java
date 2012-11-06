@@ -142,7 +142,8 @@ public class LispParser {
 	    System.out.println("-------- test 11 - (( lambda (x) (- x  (* x x)) 3)---------");
 	    
 	    e = new Expr(new StringAtom("-"));	
-	    e.AddArg( new SymbolAtom("x"));	    
+	    e.AddArg( new SymbolAtom("x"));
+	    
 	    e2 = new Expr(new StringAtom("*"));	  
 	    e2.AddArg( new SymbolAtom("x"));
 	    e2.AddArg( new SymbolAtom("x"));

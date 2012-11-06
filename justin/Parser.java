@@ -73,7 +73,7 @@ Cons list():
     jj_consume_token(LPAR);
     jj_consume_token(LPAR);
     n = jj_consume_token(SYMBOL);
-               String A = "(" + n.toString() + ") "; String B = expr();
+               String A = "(" + n.toString() + ") "; String B = lambdaExpr();
   String let = A + " " + B; {if (true) return let;}
     throw new Error("Missing return statement in function");
   }
@@ -102,35 +102,110 @@ String body() :
     throw new Error("Missing return statement in function");
   }
 
-  static final public String expr() throws ParseException {
+  static final public SExpr expr() throws ParseException {
   Token n;
   String v;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case LPAR:
+  SExpr s;
+  SExpr s2;
+  int i;
+    if (jj_2_1(2)) {
       jj_consume_token(LPAR);
       jj_consume_token(LPAR);
       jj_consume_token(LAMBDA);
       jj_consume_token(LPAR);
-      n = jj_consume_token(SYMBOL);
-                            System.out.println(n.toString());
-                           // SymbolAtom symAtom = new SymbolAtom(n.toString());
+      v = parameter();
+                      SymbolAtom symAtom = new SymbolAtom(v);
+      jj_consume_token(RPAR);
+      s = body();
+      jj_consume_token(RPAR);
+      s2 = body();
+      jj_consume_token(RPAR);
+                    FunctionExpr function = new FunctionExpr(symAtom, s, s2);
+                    SExpr evaluated = function.getBody();
+                    System.out.println(evaluated);
+                    {if (true) return evaluated;}
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case NUMBER:
+        /* Case: just a number */
+            n = jj_consume_token(NUMBER);
+                    i = Integer.parseInt(n.toString()); {if (true) return null;}
+        break;
+      case LPAR:
+      case SYMBOL:
+        /* Case: just an Expr, e.g. (+ 3 3) */
+            s = body();
+                 System.out.println(((Expr)(s)).eval()); {if (true) return s;}
+        break;
+      case 0:
+        jj_consume_token(0);
+         {if (true) return null;}
+        break;
+      default:
+        jj_la1[1] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
+    throw new Error("Missing return statement in function");
+  }
 
-      jj_consume_token(RPAR);
-      jj_consume_token(SYMBOL);
-                            System.out.println(n.toString());
-                            SExpr s = new SymbolAtom(n.toString());
-                            {if (true) return "";}
-      jj_consume_token(RPAR);
-      jj_consume_token(SYMBOL);
-      jj_consume_token(RPAR);
+  static final public SExpr body() throws ParseException {
+  Token n; String v; SExpr s; int i;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case SYMBOL:
+      /* Case: body = SYMBOL */
+          n = jj_consume_token(SYMBOL);
+                  v = n.toString(); s = new SymbolAtom(v); {if (true) return s;}
       break;
-    case 0:
-      jj_consume_token(0);
+    case NUMBER:
+      n = jj_consume_token(NUMBER);
+                  i = Integer.parseInt(n.toString()); s = new NumericAtom(i); {if (true) return s;}
       break;
     default:
-      jj_la1[1] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+      jj_la1[3] = jj_gen;
+      if (jj_2_2(2)) {
+        jj_consume_token(LPAR);
+        n = jj_consume_token(OP);
+                  v = n.toString(); Expr e = new Expr(new StringAtom(v));
+        label_1:
+        while (true) {
+          s = body();
+                   e.AddArg(s);
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case LPAR:
+          case NUMBER:
+          case SYMBOL:
+            ;
+            break;
+          default:
+            jj_la1[2] = jj_gen;
+            break label_1;
+          }
+        }
+        jj_consume_token(RPAR);
+             {if (true) return e;}
+      } else if (jj_2_3(2)) {
+        jj_consume_token(LPAR);
+        jj_consume_token(LPAR);
+        jj_consume_token(LAMBDA);
+        jj_consume_token(LPAR);
+        v = parameter();
+                      SymbolAtom symAtom = new SymbolAtom(v);
+        jj_consume_token(RPAR);
+        s = body();
+        jj_consume_token(RPAR);
+        n = jj_consume_token(NUMBER);
+                    NumericAtom numAtom = new NumericAtom(Integer.parseInt(n.toString()));
+        jj_consume_token(RPAR);
+                    FunctionExpr function = new FunctionExpr(symAtom, s, numAtom);
+                    SExpr evaluated = function.getBody();
+                    System.out.println(evaluated);
+                    {if (true) return evaluated;}
+      } else {
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
     }
     throw new Error("Missing return statement in function");
   }
@@ -148,7 +223,7 @@ String body() :
                  {if (true) return n.toString();}
       break;
     default:
-      jj_la1[2] = jj_gen;
+      jj_la1[4] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -164,6 +239,214 @@ String body() :
     throw new Error("Missing return statement in function");
   }
 
+  static final public String lambdaExpr() throws ParseException {
+  Token n;
+  String v;
+    if (jj_2_4(2)) {
+      jj_consume_token(LPAR);
+      jj_consume_token(LET);
+      jj_consume_token(LPAR);
+      jj_consume_token(LPAR);
+                                  String A = "((lambda (" + parameter() + ") ";
+                                  String B = lambdaExpr();
+      jj_consume_token(RPAR);
+      jj_consume_token(RPAR);
+                                  String C = lambdaExpr();
+      jj_consume_token(RPAR);
+                                  A += C + ") " + B + ")"; {if (true) return A;}
+    } else if (jj_2_5(2)) {
+      jj_consume_token(LPAR);
+      jj_consume_token(LAMBDA);
+      jj_consume_token(LPAR);
+                              String A = "(lambda (" + parameter() + ") ";
+      jj_consume_token(RPAR);
+                              A += lambdaExpr() + ")";
+      jj_consume_token(RPAR);
+                              {if (true) return A;}
+    } else if (jj_2_6(2)) {
+      jj_consume_token(LPAR);
+      n = jj_consume_token(OP);
+                              String B = "(" + n.toString() + " " + lambdaExpr();
+      label_2:
+      while (true) {
+        v = lambdaExpr();
+                                    B += " " + v;
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case LPAR:
+        case NUMBER:
+        case SYMBOL:
+          ;
+          break;
+        default:
+          jj_la1[5] = jj_gen;
+          break label_2;
+        }
+      }
+      jj_consume_token(RPAR);
+                              B += ")"; {if (true) return B;}
+    } else if (jj_2_7(2)) {
+      jj_consume_token(LPAR);
+      v = lambdaExpr();
+                                    String app = "(" + v;
+      label_3:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case LPAR:
+        case NUMBER:
+        case SYMBOL:
+          ;
+          break;
+        default:
+          jj_la1[6] = jj_gen;
+          break label_3;
+        }
+        v = lambdaExpr();
+                                    app += " " + v;
+      }
+      jj_consume_token(RPAR);
+                              app += ")"; {if (true) return app;}
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case NUMBER:
+        n = jj_consume_token(NUMBER);
+                              String B = n.toString(); {if (true) return B;}
+        break;
+      case SYMBOL:
+        n = jj_consume_token(SYMBOL);
+                              String C = n.toString(); {if (true) return C;}
+        break;
+      default:
+        jj_la1[7] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
+    throw new Error("Missing return statement in function");
+  }
+
+  static private boolean jj_2_1(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_1(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(0, xla); }
+  }
+
+  static private boolean jj_2_2(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_2(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(1, xla); }
+  }
+
+  static private boolean jj_2_3(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_3(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(2, xla); }
+  }
+
+  static private boolean jj_2_4(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_4(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(3, xla); }
+  }
+
+  static private boolean jj_2_5(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_5(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(4, xla); }
+  }
+
+  static private boolean jj_2_6(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_6(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(5, xla); }
+  }
+
+  static private boolean jj_2_7(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_7(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(6, xla); }
+  }
+
+  static private boolean jj_3_3() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(LPAR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(LPAR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_7() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_4() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(LET)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_4() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_4()) {
+    jj_scanpos = xsp;
+    if (jj_3_5()) {
+    jj_scanpos = xsp;
+    if (jj_3_6()) {
+    jj_scanpos = xsp;
+    if (jj_3_7()) {
+    jj_scanpos = xsp;
+    if (jj_3R_5()) {
+    jj_scanpos = xsp;
+    if (jj_3R_6()) return true;
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_6() {
+    if (jj_scan_token(SYMBOL)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_2() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(OP)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_6() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(OP)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_5() {
+    if (jj_scan_token(NUMBER)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_5() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(LAMBDA)) return true;
+    return false;
+  }
+
   static private boolean jj_initialized_once = false;
   /** Generated Token Manager. */
   static public ParserTokenManager token_source;
@@ -173,15 +456,20 @@ String body() :
   /** Next token. */
   static public Token jj_nt;
   static private int jj_ntk;
+  static private Token jj_scanpos, jj_lastpos;
+  static private int jj_la;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[3];
+  static final private int[] jj_la1 = new int[8];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x1fc1,0x101,0x1400,};
+      jj_la1_0 = new int[] {0x1fc1,0x1501,0x1500,0x1400,0x1400,0x1500,0x1500,0x1400,};
    }
+  static final private JJCalls[] jj_2_rtns = new JJCalls[7];
+  static private boolean jj_rescan = false;
+  static private int jj_gc = 0;
 
   /** Constructor with InputStream. */
   public Parser(java.io.InputStream stream) {
@@ -201,7 +489,8 @@ String body() :
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -215,7 +504,8 @@ String body() :
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Constructor. */
@@ -232,7 +522,8 @@ String body() :
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -242,7 +533,8 @@ String body() :
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Constructor with generated Token Manager. */
@@ -258,7 +550,8 @@ String body() :
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -267,7 +560,8 @@ String body() :
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   static private Token jj_consume_token(int kind) throws ParseException {
@@ -277,11 +571,44 @@ String body() :
     jj_ntk = -1;
     if (token.kind == kind) {
       jj_gen++;
+      if (++jj_gc > 100) {
+        jj_gc = 0;
+        for (int i = 0; i < jj_2_rtns.length; i++) {
+          JJCalls c = jj_2_rtns[i];
+          while (c != null) {
+            if (c.gen < jj_gen) c.first = null;
+            c = c.next;
+          }
+        }
+      }
       return token;
     }
     token = oldToken;
     jj_kind = kind;
     throw generateParseException();
+  }
+
+  static private final class LookaheadSuccess extends java.lang.Error { }
+  static final private LookaheadSuccess jj_ls = new LookaheadSuccess();
+  static private boolean jj_scan_token(int kind) {
+    if (jj_scanpos == jj_lastpos) {
+      jj_la--;
+      if (jj_scanpos.next == null) {
+        jj_lastpos = jj_scanpos = jj_scanpos.next = token_source.getNextToken();
+      } else {
+        jj_lastpos = jj_scanpos = jj_scanpos.next;
+      }
+    } else {
+      jj_scanpos = jj_scanpos.next;
+    }
+    if (jj_rescan) {
+      int i = 0; Token tok = token;
+      while (tok != null && tok != jj_scanpos) { i++; tok = tok.next; }
+      if (tok != null) jj_add_error_token(kind, i);
+    }
+    if (jj_scanpos.kind != kind) return true;
+    if (jj_la == 0 && jj_scanpos == jj_lastpos) throw jj_ls;
+    return false;
   }
 
 
@@ -314,6 +641,33 @@ String body() :
   static private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
   static private int[] jj_expentry;
   static private int jj_kind = -1;
+  static private int[] jj_lasttokens = new int[100];
+  static private int jj_endpos;
+
+  static private void jj_add_error_token(int kind, int pos) {
+    if (pos >= 100) return;
+    if (pos == jj_endpos + 1) {
+      jj_lasttokens[jj_endpos++] = kind;
+    } else if (jj_endpos != 0) {
+      jj_expentry = new int[jj_endpos];
+      for (int i = 0; i < jj_endpos; i++) {
+        jj_expentry[i] = jj_lasttokens[i];
+      }
+      jj_entries_loop: for (java.util.Iterator<?> it = jj_expentries.iterator(); it.hasNext();) {
+        int[] oldentry = (int[])(it.next());
+        if (oldentry.length == jj_expentry.length) {
+          for (int i = 0; i < jj_expentry.length; i++) {
+            if (oldentry[i] != jj_expentry[i]) {
+              continue jj_entries_loop;
+            }
+          }
+          jj_expentries.add(jj_expentry);
+          break jj_entries_loop;
+        }
+      }
+      if (pos != 0) jj_lasttokens[(jj_endpos = pos) - 1] = kind;
+    }
+  }
 
   /** Generate ParseException. */
   static public ParseException generateParseException() {
@@ -323,7 +677,7 @@ String body() :
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 8; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -339,6 +693,9 @@ String body() :
         jj_expentries.add(jj_expentry);
       }
     }
+    jj_endpos = 0;
+    jj_rescan_token();
+    jj_add_error_token(0, 0);
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
       exptokseq[i] = jj_expentries.get(i);
@@ -352,6 +709,47 @@ String body() :
 
   /** Disable tracing. */
   static final public void disable_tracing() {
+  }
+
+  static private void jj_rescan_token() {
+    jj_rescan = true;
+    for (int i = 0; i < 7; i++) {
+    try {
+      JJCalls p = jj_2_rtns[i];
+      do {
+        if (p.gen > jj_gen) {
+          jj_la = p.arg; jj_lastpos = jj_scanpos = p.first;
+          switch (i) {
+            case 0: jj_3_1(); break;
+            case 1: jj_3_2(); break;
+            case 2: jj_3_3(); break;
+            case 3: jj_3_4(); break;
+            case 4: jj_3_5(); break;
+            case 5: jj_3_6(); break;
+            case 6: jj_3_7(); break;
+          }
+        }
+        p = p.next;
+      } while (p != null);
+      } catch(LookaheadSuccess ls) { }
+    }
+    jj_rescan = false;
+  }
+
+  static private void jj_save(int index, int xla) {
+    JJCalls p = jj_2_rtns[index];
+    while (p.gen > jj_gen) {
+      if (p.next == null) { p = p.next = new JJCalls(); break; }
+      p = p.next;
+    }
+    p.gen = jj_gen + xla - jj_la; p.first = token; p.arg = xla;
+  }
+
+  static final class JJCalls {
+    int gen;
+    Token first;
+    int arg;
+    JJCalls next;
   }
 
     }
