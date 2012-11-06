@@ -45,6 +45,22 @@ public class LispParserDumpVisitor implements LispParserVisitor
     --indent;
     return data;
   }
+ 
+    public Object visit(ASTLambda node, Object data) {
+    System.out.println(indentString() + node);
+    ++indent;
+    data = node.childrenAccept(this, data);
+    --indent;
+    return data;
+  }
+
+    public Object visit(ASTBody node, Object data) {
+    //System.out.println(indentString() + node);
+   // ++indent;
+    data = node.childrenAccept(this, data);
+    //--indent;
+    return data;
+  }
 
   /*public Object visit(ASTInteger node, Object data) {
     System.out.println(indentString() + node);

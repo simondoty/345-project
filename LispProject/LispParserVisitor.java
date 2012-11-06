@@ -3,7 +3,9 @@ public interface LispParserVisitor
 {
   public Object visit(SimpleNode node, Object data);
   public Object visit(ASTProgram node, Object data);
-  public Object visit(ASTNum node, Object data);
+  public Object visit(ASTBody node, Object data);
+  public Object visit(ASTLambda node, Object data);
   public Object visit(ASTExpr node, Object data);
+  public Object visit(ASTNum node, Object data);
 }
-/* JavaCC - OriginalChecksum=1a763d1543640d1005a5030b156addf0 (do not edit this line) */
+/* JavaCC - OriginalChecksum=cb8e27b00ee66b9373d8132b24c3e038 (do not edit this line) */

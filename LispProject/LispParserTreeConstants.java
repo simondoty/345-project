@@ -2,14 +2,18 @@
 public interface LispParserTreeConstants
 {
   public int JJTPROGRAM = 0;
-  public int JJTNUM = 1;
-  public int JJTEXPR = 2;
+  public int JJTBODY = 1;
+  public int JJTLAMBDA = 2;
+  public int JJTEXPR = 3;
+  public int JJTNUM = 4;
 
 
   public String[] jjtNodeName = {
     "Program",
-    "Num",
+    "Body",
+    "Lambda",
     "Expr",
+    "Num",
   };
 }
-/* JavaCC - OriginalChecksum=0ac50a12c526207379e366bab4aae72e (do not edit this line) */
+/* JavaCC - OriginalChecksum=c91271e857468a3dfdb4779b86bf68f2 (do not edit this line) */

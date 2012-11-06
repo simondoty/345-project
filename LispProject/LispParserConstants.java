@@ -39,7 +39,7 @@ public interface LispParserConstants {
     "\"\\r\"",
     "<token of kind 5>",
     "<token of kind 6>",
-    "\"LAMBDA\"",
+    "\"lambda\"",
     "\"LET\"",
     "\"(\"",
     "\")\"",

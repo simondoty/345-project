@@ -13,8 +13,8 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
   }
 
   public Object visit(SimpleNode node, Object data) {
-    System.out.println(indentString() + node +
-                   ": acceptor not unimplemented in subclass?");
+    //System.out.println(indentString() + node +
+    //               ": acceptor not unimplemented in subclass?");
     ++indent;
     data = node.childrenAccept(this, data);
     --indent;
@@ -22,11 +22,14 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
   }
 
   public Object visit(ASTProgram node, Object data) {
-    System.out.println(indentString() + node);
+    //System.out.println(indentString() + node);
     ++indent;
     data = node.childrenAccept(this, data);
     --indent;
-    return data;
+    //return data;
+    
+    return node.jjtGetChild(0).jjtAccept(this, data);    
+    
   }
 
  
@@ -38,7 +41,7 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
 	  ++indent;		 
 	  --indent;
 	  sum = (Integer)arg1 + (Integer) arg2;
-		System.out.println("arg1: " + arg1 + " and arg2: " + arg2 + " and sum is: " + sum);
+		//System.out.println("arg1: " + arg1 + " and arg2: " + arg2 + " and sum is: " + sum);
     return (Integer) sum;
   }
 
@@ -46,6 +49,23 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     //since this is a num, just return value
     return node.getVal();
   }
+ 
+      public Object visit(ASTLambda node, Object data) {
+    System.out.println(indentString() + node);
+    ++indent;
+    data = node.childrenAccept(this, data);
+    --indent;
+    return data;
+  }
+
+      public Object visit(ASTBody node, Object data) {
+    System.out.println(indentString() + node);
+    ++indent;
+    data = node.childrenAccept(this, data);
+    --indent;
+    return data;
+  }
+
 
   /*public Object visit(ASTInteger node, Object data) {
     System.out.println(indentString() + node);

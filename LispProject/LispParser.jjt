@@ -24,7 +24,9 @@ public class LispParser {
       LispParserVisitor v = new LispParserDumpVisitor();
       root.jjtAccept(v, null);
       LispParserVisitor i = new LispParserInterpreterVisitor();
-      root.jjtAccept(i, null);
+      
+      System.out.println(root.jjtAccept(i, null) );
+      
       System.out.println("Parse Completed Successfully.");
     } catch (Exception e) {
       System.out.println("Oops.");
@@ -50,7 +52,7 @@ SKIP :
 // ***************************************************************************
 TOKEN:
 {
-    < LAMBDA : "LAMBDA" >
+    < LAMBDA : "lambda" >
   | < LET    : "LET" >
   | < LPAR   : "(" >
   | < RPAR   : ")" >
@@ -81,8 +83,44 @@ TOKEN:
 // program entry point
 ASTProgram Program() : {}
 {
-  Expr() <SEMI>
+  Body() <SEMI>
   { return jjtThis; }
+}
+
+// ***************************************************************************
+void Body():
+{}
+{
+LOOKAHEAD(2)
+ <LPAR> <LPAR>
+        Lambda()
+ | Expr()
+ | Num()
+}
+// ***************************************************************************
+void Lambda() :
+{}
+{
+    /* Case: Lambda Expression */
+
+        <LAMBDA>
+        <LPAR>
+    <IDENTIFIER>
+        <RPAR>
+    Body()
+        <RPAR>
+    Body()
+        <RPAR>
+}
+// ***************************************************************************
+void Expr(): { Token t; String s; }
+{
+  <LPAR>
+	t = <OP>{ s = t.image; jjtThis.setOp(s); }
+      (Num() | Expr() )+
+   
+  <RPAR>
+
 }
 
 // ***************************************************************************
@@ -93,14 +131,3 @@ void Num():
 
 }
 
-// ***************************************************************************
-void Expr(): { Token t; String s; }
-{
-  <LPAR>
-	t = <OP>{ s = t.image; jjtThis.setOp(s); }
-      (Num() | Expr() )+
-   
-  <RPAR>
-  |  Num()
-
-}

@@ -80,7 +80,9 @@ static private int jjMoveStringLiteralDfa0_0()
       case 59:
          return jjStartNfaWithStates_0(0, 11, 4);
       case 76:
-         return jjMoveStringLiteralDfa1_0(0x180L);
+         return jjMoveStringLiteralDfa1_0(0x100L);
+      case 108:
+         return jjMoveStringLiteralDfa1_0(0x80L);
       default :
          return jjMoveNfa_0(0, 0);
    }
@@ -94,10 +96,10 @@ static private int jjMoveStringLiteralDfa1_0(long active0)
    }
    switch(curChar)
    {
-      case 65:
-         return jjMoveStringLiteralDfa2_0(active0, 0x80L);
       case 69:
          return jjMoveStringLiteralDfa2_0(active0, 0x100L);
+      case 97:
+         return jjMoveStringLiteralDfa2_0(active0, 0x80L);
       default :
          break;
    }
@@ -114,12 +116,12 @@ static private int jjMoveStringLiteralDfa2_0(long old0, long active0)
    }
    switch(curChar)
    {
-      case 77:
-         return jjMoveStringLiteralDfa3_0(active0, 0x80L);
       case 84:
          if ((active0 & 0x100L) != 0L)
             return jjStartNfaWithStates_0(2, 8, 4);
          break;
+      case 109:
+         return jjMoveStringLiteralDfa3_0(active0, 0x80L);
       default :
          break;
    }
@@ -136,7 +138,7 @@ static private int jjMoveStringLiteralDfa3_0(long old0, long active0)
    }
    switch(curChar)
    {
-      case 66:
+      case 98:
          return jjMoveStringLiteralDfa4_0(active0, 0x80L);
       default :
          break;
@@ -154,7 +156,7 @@ static private int jjMoveStringLiteralDfa4_0(long old0, long active0)
    }
    switch(curChar)
    {
-      case 68:
+      case 100:
          return jjMoveStringLiteralDfa5_0(active0, 0x80L);
       default :
          break;
@@ -172,7 +174,7 @@ static private int jjMoveStringLiteralDfa5_0(long old0, long active0)
    }
    switch(curChar)
    {
-      case 65:
+      case 97:
          if ((active0 & 0x80L) != 0L)
             return jjStartNfaWithStates_0(5, 7, 4);
          break;
@@ -384,7 +386,7 @@ static final int[] jjnextStates = {
 
 /** Token literal values. */
 public static final String[] jjstrLiteralImages = {
-"", null, null, null, null, null, null, "\114\101\115\102\104\101", 
+"", null, null, null, null, null, null, "\154\141\155\142\144\141", 
 "\114\105\124", "\50", "\51", "\73", null, null, null, null, };
 
 /** Lexer state names. */
