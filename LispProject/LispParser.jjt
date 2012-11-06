@@ -1,0 +1,106 @@
+/*******************************************************************************
+ Justin Hust
+ Simon Doty
+ Ethan Petuchowski
+
+ Group Project 1A
+ LispParser - Lisp Parser and Interpreter 
+*******************************************************************************/
+
+options {
+  MULTI=true;
+  VISITOR=true;
+  NODE_DEFAULT_VOID=false;
+}
+
+PARSER_BEGIN(LispParser)
+
+public class LispParser {
+  public static void main(String args[]) {
+    System.out.println("Reading from standard input...");
+    LispParser p = new LispParser(System.in);
+    try {
+      ASTProgram root = p.Program();
+      LispParserVisitor v = new LispParserDumpVisitor();
+      root.jjtAccept(v, null);
+      LispParserVisitor i = new LispParserInterpreterVisitor();
+      root.jjtAccept(i, null);
+      System.out.println("Parse Completed Successfully.");
+    } catch (Exception e) {
+      System.out.println("Oops.");
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+    }
+  }
+}
+
+PARSER_END(LispParser)
+
+// ***************************************************************************
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
+}
+
+// ***************************************************************************
+TOKEN:
+{
+    < LAMBDA : "LAMBDA" >
+  | < LET    : "LET" >
+  | < LPAR   : "(" >
+  | < RPAR   : ")" >
+  | < SEMI   : ";" >
+  | < OP: ["+", "-", "*", "/"] >
+
+}
+
+// ***************************************************************************
+TOKEN : /* LITERALS */
+{
+  < INTEGER       :  ["1"-"9"] (["0"-"9"])* >
+  | < IDENTIFIER  :  ["a"-"z", "A"-"Z", "~", "`", "!", "@", "#", "$", "/", "^", "&",
+                      "*", "_", "=", "{", "}", "[", "]", "|", "\\", ":",
+                      ";", "<", ">", ",", ".", "?", "'", "\""](["a"-"z", "A"-"Z",
+                      "0"-"9", "~", "`", "!", "@", "#", "$", "/", "^", "&", "*", "_",
+                      "=", "{", "}", "[", "]", "|", "\\", ":", ";", "<",
+                      ">", ",", ".", "?", "'", "\""])* >
+}
+
+// ***************************************************************************
+TOKEN:
+{
+  < ERROR : ~[] >
+}
+
+// ***************************************************************************
+// program entry point
+ASTProgram Program() : {}
+{
+  Expr() <SEMI>
+  { return jjtThis; }
+}
+
+// ***************************************************************************
+void Num(): 
+{ Token t; }
+{
+  t = <INTEGER> { jjtThis.setVal(Integer.parseInt(t.image)); }
+
+}
+
+// ***************************************************************************
+void Expr(): { Token t; String s; }
+{
+  <LPAR>
+	t = <OP>{ s = t.image; jjtThis.setOp(s); }
+      (Num() | Expr() )+
+   
+  <RPAR>
+  |  Num()
+
+}
