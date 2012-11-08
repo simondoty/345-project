@@ -108,16 +108,22 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     
   }
     
+  // *********************************************************************
+  public Object visit(ASTLambdaExpr node, Object data) {
+    // just return self.
+    return node;
   
- /*
-      public Object visit(ASTLambda node, Object data) {
+  /*
     System.out.println(indentString() + node);
     ++indent;
     data = node.childrenAccept(this, data);
     --indent;
     return data;
+  */
+    
   }
 
+ /*
       public Object visit(ASTBody node, Object data) {
     System.out.println(indentString() + node);
     ++indent;

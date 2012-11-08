@@ -41,7 +41,7 @@ public class LispParser {
         RunTests(); 
      
       } else {                    
-        RunCommand(sInput + ";");
+        RunCommand(sInput);
                    
       }
               
@@ -64,9 +64,11 @@ public class LispParser {
       LispParserVisitor v = new LispParserDumpVisitor();
       root.jjtAccept(v, null);
       
+      System.out.println("----------------------");
+      
       // interpret the AST
       LispParserVisitor i = new LispParserInterpreterVisitor();
-      System.out.println(root.jjtAccept(i, null) );    
+      System.out.println("Interpreted Result: " + root.jjtAccept(i, null) );    
 
       
     } catch (Exception e) {
@@ -80,16 +82,18 @@ public class LispParser {
   // **************************************************************************
   public static void RunTests() {
     System.out.println("**************** test 1: 5 **************************");
-    RunCommand("5;");
+    RunCommand("5");
     System.out.println("**************** test 2: (+ 3 4 5) **************************");    
-    RunCommand("(+ 3 4 5);");
+    RunCommand("(+ 3 4 5)");
     System.out.println("**************** test 3: (- 3 1) **************************");        
-    RunCommand("(- 3 1);");
+    RunCommand("(- 3 1)");
     System.out.println("**************** test 4: (* 7 9) **************************");              
-    RunCommand("(* 7 9);");
+    RunCommand("(* 7 9)");
     System.out.println("**************** test 5: (+ 3 4 (* 7 (- 4 2))) **************************");                  
-    RunCommand("(+ 3 4 (* 7 (- 4 2)));");
-  
+    RunCommand("(+ 3 4 (* 7 (- 4 2)))");
+    System.out.println("**************** test 6: (lambda (y) (+ 3 (- 4 3))) **************************");                  
+    RunCommand("(lambda (y) (+ 3 (- 4 3)))");
+
   }
   
 }
@@ -117,7 +121,7 @@ TOKEN:
   | < SEMI   : ";" >
   | < OP: ["+", "-", "*", "/"] >
   | < DIGIT : ["0"-"9"] >
-  | < LETTER        :  ["a"-"z", "A"-"Z"] >
+  | < LETTER        :  (["a"-"z", "A"-"Z"])+ >
   | < UNDERSCORE    :  ["_"] >      
   | < SYMBOL        :  ["a"-"z", "A"-"Z", "~", "`", "!", "@", "#", "$", "/", "^", "&",
                         "*", "_", "-", "=", "+", "{", "}", "[", "]", "|", "\\", ":",
@@ -128,7 +132,7 @@ TOKEN:
 // ***************************************************************************
 TOKEN : /* LITERALS */
 {
-  < INTEGER       :  <DIGIT> (<DIGIT>)* >
+  < INTEGER         :  <DIGIT> (<DIGIT>)* >
   | < IDENTIFIER    :  <LETTER> (<DIGIT> | <LETTER> | <UNDERSCORE>)* >  
   
 }
@@ -143,11 +147,12 @@ TOKEN:
 // program entry point
 ASTProgram Program() : {}
 {
-  (Num() | ArithExpr())
-  
-  
-  <SEMI>
+
+(  Num()
+  | ( LOOKAHEAD(2) LambdaExpr() | ArithExpr() ))
+    
   { return jjtThis; }
+  
 }
 
 // ***************************************************************************
@@ -172,26 +177,29 @@ LOOKAHEAD(2)
  | Num()
 }
 
+*/
+
 // ***************************************************************************
-void Lambda() :
+void LambdaExpr() :
 {}
 {
-    //Case: Lambda Expression
+ <LPAR> 
+    <LAMBDA>
 
-        <LAMBDA>
-        <LPAR>
-    <IDENTIFIER>
-        <RPAR>
-    Body()
-        <RPAR>
-    Body()
-        <RPAR>
+    <LPAR>
+    Identifier()
+    <RPAR>
+    
+  (Num() | ArithExpr())
+//LOOKAHEAD(2)
+ //   (Num() | ArithExpr() | LambdaExpr())
+    <RPAR>
 }
-*/
+
 // ***************************************************************************
 void ArithExpr(): { Token t; String s; }
 {
-  <LPAR>
+<LPAR> 
 	t = <OP>{ s = t.image; jjtThis.setOp(s); }
       (Num() | ArithExpr() )+
    
@@ -203,7 +211,7 @@ void ArithExpr(): { Token t; String s; }
 void Identifier(): 
 { Token t; }
 {
-  t = <SYMBOL> { jjtThis.setIdentifier(t.image); }
+  t = <LETTER> { jjtThis.setIdentifier(t.image); }
 
 }
 
