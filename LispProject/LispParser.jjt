@@ -149,8 +149,8 @@ ASTProgram Program() : {}
 {
 
 (  Num()
-   | (   LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr()
-     )
+   | (   LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr())
+    
 )
       
   { return jjtThis; }
@@ -188,8 +188,8 @@ void FunctionExpr() :
  <LPAR> LambdaExpr()
 
 (  Num()
-  | ( LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr() | Identifier()
-    )
+  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
+
   
 )
     <RPAR>
@@ -208,8 +208,8 @@ void LambdaExpr() :
     <RPAR>
 
 (  Num()
-  | ( LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr() | Identifier()
-    )
+  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
+ 
 
 )
 
@@ -221,7 +221,7 @@ void ArithExpr(): { Token t; String s; }
 {
 <LPAR> 
 	t = <OP>{ s = t.image; jjtThis.setOp(s); }
-      (Num() | ArithExpr() )+
+      ( Num() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(2) FunctionExpr() | Identifier() )+
    
   <RPAR>
 

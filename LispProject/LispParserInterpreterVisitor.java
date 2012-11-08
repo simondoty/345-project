@@ -1,9 +1,13 @@
 /* Interpreter Visitor */
-package Lisp;
+import java.util.*;
 public class LispParserInterpreterVisitor implements LispParserVisitor
 {
   private int indent = 0;
+  
 
+  
+  private ArrayList<TreeMap <String, Object>> env = new ArrayList< TreeMap<String, Object>>();
+  
   private String indentString() {
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < indent; ++i) {
@@ -42,7 +46,9 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
       int sum = 0;
       
       for(int iChild=0;iChild < node.jjtGetNumChildren(); iChild++) {
-    		Object result = node.jjtGetChild(iChild).jjtAccept(this, data);      
+      
+        Node chile = node.jjtGetChild(iChild);
+        Object result = chile.jjtAccept(this, data);
         
         sum += (Integer) result;
         
@@ -101,10 +107,20 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     return node.getVal();
   }
 
+  // FOR CHANGING TO DYNAMIC SCOPING, YOU MAY JUST HAVE TO TRAVERSE THROUGH
+  // THE ARRAYLIST "ENV" THE OTHER WAY
+  
   // *********************************************************************
 	public Object visit(ASTIdentifier node, Object data) {
-    //since this is a num, just return value
-    return node.getIdentifier();
+    // if Identifier is mapped in env, return mapped value
+    Object replacement = null;
+    for (TreeMap<String, Object> t : env) {
+      if (t.containsKey(node.getIdentifier())){
+        replacement = t.get(node.getIdentifier());
+      }  
+    }
+    if (replacement == null) throw new IllegalStateException("Lookup failed for " + node.getIdentifier());
+    return replacement;
     
   }
     
@@ -135,6 +151,13 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     // "evaluate" child argument. this would require an environment to build.
     Object arg = node.jjtGetChild(1).jjtAccept(this, data);   
     
+    // try adding a String, int map to the env arraylist
+    TreeMap<String, Object> pair = new TreeMap<String, Object>();
+    pair.put(param.getIdentifier(), arg);    
+    
+    env.add(pair);
+    
+    
     // call replace method
     // body can be:
     // number
@@ -142,6 +165,8 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     // lambda expression
     // lambda applicatoin
     
+    
+    /*
     for(int iChild=0;iChild < body.jjtGetNumChildren(); iChild++) {
       Node n = body.jjtGetChild(iChild);
       
@@ -159,6 +184,8 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
       }
     
     }
+    
+    */
       
     // just return self.
     return body.jjtAccept(this, data);

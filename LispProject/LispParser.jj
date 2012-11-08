@@ -159,8 +159,8 @@ try {
 /*@egen*/
 
 (  Num()
-   | (   LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr()
-     )
+   | (   LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr())
+    
 )/*@bgen(jjtree)*/
   {
     jjtree.closeNodeScope(jjtn000, true);
@@ -229,8 +229,8 @@ void FunctionExpr() :
  <LPAR> LambdaExpr()
 
 (  Num()
-  | ( LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr() | Identifier()
-    )
+  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
+
   
 )
     <RPAR>/*@bgen(jjtree)*/
@@ -275,8 +275,8 @@ void LambdaExpr() :
     <RPAR>
 
 (  Num()
-  | ( LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr() | Identifier()
-    )
+  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
+ 
 
 )
 
@@ -314,7 +314,7 @@ try {
 /*@egen*/
 <LPAR> 
 	t = <OP>{ s = t.image; jjtn000.setOp(s); }
-      (Num() | ArithExpr() )+
+      ( Num() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(2) FunctionExpr() | Identifier() )+
    
   <RPAR>/*@bgen(jjtree)*/
 } catch (Throwable jjte000) {

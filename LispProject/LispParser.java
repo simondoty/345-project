@@ -95,12 +95,12 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, Lisp
       case LPAR:
         if (jj_2_1(2)) {
           LambdaExpr();
+        } else if (jj_2_2(2)) {
+          FunctionExpr();
         } else {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case LPAR:
             ArithExpr();
-            break;
-            FunctionExpr();
             break;
           default:
             jj_la1[0] = jj_gen;
@@ -178,14 +178,14 @@ LOOKAHEAD(2)
         break;
       case LPAR:
       case LETTER:
-        if (jj_2_2(2)) {
+        if (jj_2_3(2)) {
           LambdaExpr();
+        } else if (jj_2_4(2)) {
+          FunctionExpr();
         } else {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case LPAR:
             ArithExpr();
-            break;
-            FunctionExpr();
             break;
           case LETTER:
             Identifier();
@@ -242,14 +242,14 @@ LOOKAHEAD(2)
         break;
       case LPAR:
       case LETTER:
-        if (jj_2_3(2)) {
+        if (jj_2_5(2)) {
           LambdaExpr();
+        } else if (jj_2_6(2)) {
+          FunctionExpr();
         } else {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case LPAR:
             ArithExpr();
-            break;
-            FunctionExpr();
             break;
           case LETTER:
             Identifier();
@@ -304,21 +304,32 @@ LOOKAHEAD(2)
         case DIGIT:
           Num();
           break;
-        case LPAR:
-          ArithExpr();
-          break;
         default:
           jj_la1[6] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
+          if (jj_2_7(2)) {
+            ArithExpr();
+          } else if (jj_2_8(2)) {
+            FunctionExpr();
+          } else {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case LETTER:
+              Identifier();
+              break;
+            default:
+              jj_la1[7] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+          }
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case LPAR:
         case DIGIT:
+        case LETTER:
           ;
           break;
         default:
-          jj_la1[7] = jj_gen;
+          jj_la1[8] = jj_gen;
           break label_1;
         }
       }
@@ -401,14 +412,39 @@ LOOKAHEAD(2)
     finally { jj_save(2, xla); }
   }
 
-  private boolean jj_3_3() {
-    if (jj_3R_2()) return true;
-    return false;
+  private boolean jj_2_4(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_4(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(3, xla); }
   }
 
-  private boolean jj_3_1() {
-    if (jj_3R_2()) return true;
-    return false;
+  private boolean jj_2_5(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_5(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(4, xla); }
+  }
+
+  private boolean jj_2_6(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_6(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(5, xla); }
+  }
+
+  private boolean jj_2_7(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_7(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(6, xla); }
+  }
+
+  private boolean jj_2_8(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_8(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(7, xla); }
   }
 
   private boolean jj_3R_2() {
@@ -417,7 +453,54 @@ LOOKAHEAD(2)
     return false;
   }
 
+  private boolean jj_3_4() {
+    if (jj_3R_3()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_4() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(OP)) return true;
+    return false;
+  }
+
+  private boolean jj_3_6() {
+    if (jj_3R_3()) return true;
+    return false;
+  }
+
+  private boolean jj_3_8() {
+    if (jj_3R_3()) return true;
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    if (jj_3R_2()) return true;
+    return false;
+  }
+
+  private boolean jj_3_5() {
+    if (jj_3R_2()) return true;
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_3() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_3R_2()) return true;
+    return false;
+  }
+
   private boolean jj_3_2() {
+    if (jj_3R_3()) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
     if (jj_3R_2()) return true;
     return false;
   }
@@ -433,15 +516,15 @@ LOOKAHEAD(2)
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
   private int jj_gen;
-  final private int[] jj_la1 = new int[8];
+  final private int[] jj_la1 = new int[9];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x200,0x2200,0x4200,0x6200,0x4200,0x6200,0x2200,0x2200,};
+      jj_la1_0 = new int[] {0x200,0x2200,0x4200,0x6200,0x4200,0x6200,0x2000,0x4000,0x6200,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[3];
+  final private JJCalls[] jj_2_rtns = new JJCalls[8];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -456,7 +539,7 @@ LOOKAHEAD(2)
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -472,7 +555,7 @@ LOOKAHEAD(2)
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -483,7 +566,7 @@ LOOKAHEAD(2)
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -495,7 +578,7 @@ LOOKAHEAD(2)
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -505,7 +588,7 @@ LOOKAHEAD(2)
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -516,7 +599,7 @@ LOOKAHEAD(2)
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -633,7 +716,7 @@ LOOKAHEAD(2)
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 9; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -669,7 +752,7 @@ LOOKAHEAD(2)
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 8; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -679,6 +762,11 @@ LOOKAHEAD(2)
             case 0: jj_3_1(); break;
             case 1: jj_3_2(); break;
             case 2: jj_3_3(); break;
+            case 3: jj_3_4(); break;
+            case 4: jj_3_5(); break;
+            case 5: jj_3_6(); break;
+            case 6: jj_3_7(); break;
+            case 7: jj_3_8(); break;
           }
         }
         p = p.next;

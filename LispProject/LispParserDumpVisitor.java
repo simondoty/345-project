@@ -67,8 +67,11 @@ public class LispParserDumpVisitor implements LispParserVisitor
   
   // *********************************************************************
 	public Object visit(ASTIdentifier node, Object data) {
-    //since this is a num, just return value
-    return "id '" + node.getIdentifier();
+    System.out.println(indentString() + "id '" + node.getIdentifier());
+    ++indent;
+    data = node.childrenAccept(this, data);
+    --indent;
+    return data;
     
   }
       
