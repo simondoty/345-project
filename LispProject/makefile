@@ -1,14 +1,17 @@
-mv LispParserDumpVisitor.java LispParser.temp
-mv LispParserInterpreterVisitor.java InterpreterParser.temp
-mv ASTNum.java Atom.temp
-mv ASTExpr.java Expr.temp
+clear
+mv LispParserDumpVisitor.java LispParserDumpVisitor.keep
+mv LispParserInterpreterVisitor.java LispParserInterpreterVisitor.keep
+mv ASTNum.java ASTNum.keep
+mv ASTArithExpr.java ASTArithExpr.keep
+mv ASTIdentifier.java ASTIdentifier.keep
 rm *.java
 rm *.class
 rm *.jj
-mv LispParser.temp LispParserDumpVisitor.java
-mv InterpreterParser.temp LispParserInterpreterVisitor.java
-mv Atom.temp ASTNum.java
-mv Expr.temp ASTExpr.java
+mv LispParserDumpVisitor.keep LispParserDumpVisitor.java
+mv LispParserInterpreterVisitor.keep LispParserInterpreterVisitor.java
+mv ASTNum.keep ASTNum.java
+mv ASTArithExpr.keep ASTArithExpr.java
+mv ASTIdentifier.keep ASTIdentifier.java
 jjtree LispParser.jjt
 javacc LispParser.jj
 javac *.java

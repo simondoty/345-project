@@ -80,15 +80,15 @@ public class LispParser {
   // **************************************************************************
   public static void RunTests() {
     System.out.println("**************** test 1: 5 **************************");
-    RunCommand("5");
+    RunCommand("5;");
     System.out.println("**************** test 2: (+ 3 4 5) **************************");    
-    RunCommand("(+ 3 4 5)");
+    RunCommand("(+ 3 4 5);");
     System.out.println("**************** test 3: (- 3 1) **************************");        
-    RunCommand("(- 3 1)");
+    RunCommand("(- 3 1);");
     System.out.println("**************** test 4: (* 7 9) **************************");              
-    RunCommand("(* 7 9)");
+    RunCommand("(* 7 9);");
     System.out.println("**************** test 5: (+ 3 4 (* 7 (- 4 2))) **************************");                  
-    RunCommand("(+ 3 4 (* 7 (- 4 2)))");
+    RunCommand("(+ 3 4 (* 7 (- 4 2)));");
   
   }
   
@@ -111,24 +111,26 @@ SKIP :
 TOKEN:
 {
     < LAMBDA : "lambda" >
-  | < LET    : "LET" >
+  | < LET    : "let" >
   | < LPAR   : "(" >
   | < RPAR   : ")" >
   | < SEMI   : ";" >
   | < OP: ["+", "-", "*", "/"] >
+  | < DIGIT : ["0"-"9"] >
+  | < LETTER        :  ["a"-"z", "A"-"Z"] >
+  | < UNDERSCORE    :  ["_"] >      
+  | < SYMBOL        :  ["a"-"z", "A"-"Z", "~", "`", "!", "@", "#", "$", "/", "^", "&",
+                        "*", "_", "-", "=", "+", "{", "}", "[", "]", "|", "\\", ":",
+                        ";", "<", ">", ",", ".", "?", "'", "\""] >
 
 }
 
 // ***************************************************************************
 TOKEN : /* LITERALS */
 {
-  < INTEGER       :  ["1"-"9"] (["0"-"9"])* >
-  | < IDENTIFIER  :  ["a"-"z", "A"-"Z", "~", "`", "!", "@", "#", "$", "/", "^", "&",
-                      "*", "_", "=", "{", "}", "[", "]", "|", "\\", ":",
-                      ";", "<", ">", ",", ".", "?", "'", "\""](["a"-"z", "A"-"Z",
-                      "0"-"9", "~", "`", "!", "@", "#", "$", "/", "^", "&", "*", "_",
-                      "=", "{", "}", "[", "]", "|", "\\", ":", ";", "<",
-                      ">", ",", ".", "?", "'", "\""])* >
+  < INTEGER       :  <DIGIT> (<DIGIT>)* >
+  | < IDENTIFIER    :  <LETTER> (<DIGIT> | <LETTER> | <UNDERSCORE>)* >  
+  
 }
 
 // ***************************************************************************
@@ -141,11 +143,25 @@ TOKEN:
 // program entry point
 ASTProgram Program() : {}
 {
-  Body() <SEMI>
+  (Num() | ArithExpr())
+  
+  
+  <SEMI>
   { return jjtThis; }
 }
 
 // ***************************************************************************
+/*
+void SExpr():
+{ }
+{
+  (Num() | Identifier() | ArithExpr() | LambdaExpr() | FuncApp() | LetExpr())
+  
+}
+*/
+
+// ***************************************************************************
+/*
 void Body():
 {}
 {
@@ -155,11 +171,12 @@ LOOKAHEAD(2)
  | Expr()
  | Num()
 }
+
 // ***************************************************************************
 void Lambda() :
 {}
 {
-    /* Case: Lambda Expression */
+    //Case: Lambda Expression
 
         <LAMBDA>
         <LPAR>
@@ -170,14 +187,23 @@ void Lambda() :
     Body()
         <RPAR>
 }
+*/
 // ***************************************************************************
-void Expr(): { Token t; String s; }
+void ArithExpr(): { Token t; String s; }
 {
   <LPAR>
 	t = <OP>{ s = t.image; jjtThis.setOp(s); }
-      (Num() | Expr() )+
+      (Num() | ArithExpr() )+
    
   <RPAR>
+
+}
+
+// ***************************************************************************
+void Identifier(): 
+{ Token t; }
+{
+  t = <SYMBOL> { jjtThis.setIdentifier(t.image); }
 
 }
 
@@ -185,7 +211,6 @@ void Expr(): { Token t; String s; }
 void Num(): 
 { Token t; }
 {
-  t = <INTEGER> { jjtThis.setVal(Integer.parseInt(t.image)); }
+  t = <DIGIT> { jjtThis.setVal(Integer.parseInt(t.image)); }
 
 }
-

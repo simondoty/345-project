@@ -21,11 +21,19 @@ public interface LispParserConstants {
   /** RegularExpression Id. */
   int OP = 12;
   /** RegularExpression Id. */
-  int INTEGER = 13;
+  int DIGIT = 13;
   /** RegularExpression Id. */
-  int IDENTIFIER = 14;
+  int LETTER = 14;
   /** RegularExpression Id. */
-  int ERROR = 15;
+  int UNDERSCORE = 15;
+  /** RegularExpression Id. */
+  int SYMBOL = 16;
+  /** RegularExpression Id. */
+  int INTEGER = 17;
+  /** RegularExpression Id. */
+  int IDENTIFIER = 18;
+  /** RegularExpression Id. */
+  int ERROR = 19;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -40,11 +48,15 @@ public interface LispParserConstants {
     "<token of kind 5>",
     "<token of kind 6>",
     "\"lambda\"",
-    "\"LET\"",
+    "\"let\"",
     "\"(\"",
     "\")\"",
     "\";\"",
     "<OP>",
+    "<DIGIT>",
+    "<LETTER>",
+    "<UNDERSCORE>",
+    "<SYMBOL>",
     "<INTEGER>",
     "<IDENTIFIER>",
     "<ERROR>",

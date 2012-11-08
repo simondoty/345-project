@@ -84,15 +84,15 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants/*@ege
   // **************************************************************************
   public static void RunTests() {
     System.out.println("**************** test 1: 5 **************************");
-    RunCommand("5");
+    RunCommand("5;");
     System.out.println("**************** test 2: (+ 3 4 5) **************************");    
-    RunCommand("(+ 3 4 5)");
+    RunCommand("(+ 3 4 5);");
     System.out.println("**************** test 3: (- 3 1) **************************");        
-    RunCommand("(- 3 1)");
+    RunCommand("(- 3 1);");
     System.out.println("**************** test 4: (* 7 9) **************************");              
-    RunCommand("(* 7 9)");
+    RunCommand("(* 7 9);");
     System.out.println("**************** test 5: (+ 3 4 (* 7 (- 4 2))) **************************");                  
-    RunCommand("(+ 3 4 (* 7 (- 4 2)))");
+    RunCommand("(+ 3 4 (* 7 (- 4 2)));");
   
   }
   
@@ -115,24 +115,26 @@ SKIP :
 TOKEN:
 {
     < LAMBDA : "lambda" >
-  | < LET    : "LET" >
+  | < LET    : "let" >
   | < LPAR   : "(" >
   | < RPAR   : ")" >
   | < SEMI   : ";" >
   | < OP: ["+", "-", "*", "/"] >
+  | < DIGIT : ["0"-"9"] >
+  | < LETTER        :  ["a"-"z", "A"-"Z"] >
+  | < UNDERSCORE    :  ["_"] >      
+  | < SYMBOL        :  ["a"-"z", "A"-"Z", "~", "`", "!", "@", "#", "$", "/", "^", "&",
+                        "*", "_", "-", "=", "+", "{", "}", "[", "]", "|", "\\", ":",
+                        ";", "<", ">", ",", ".", "?", "'", "\""] >
 
 }
 
 // ***************************************************************************
 TOKEN : /* LITERALS */
 {
-  < INTEGER       :  ["1"-"9"] (["0"-"9"])* >
-  | < IDENTIFIER  :  ["a"-"z", "A"-"Z", "~", "`", "!", "@", "#", "$", "/", "^", "&",
-                      "*", "_", "=", "{", "}", "[", "]", "|", "\\", ":",
-                      ";", "<", ">", ",", ".", "?", "'", "\""](["a"-"z", "A"-"Z",
-                      "0"-"9", "~", "`", "!", "@", "#", "$", "/", "^", "&", "*", "_",
-                      "=", "{", "}", "[", "]", "|", "\\", ":", ";", "<",
-                      ">", ",", ".", "?", "'", "\""])* >
+  < INTEGER       :  <DIGIT> (<DIGIT>)* >
+  | < IDENTIFIER    :  <LETTER> (<DIGIT> | <LETTER> | <UNDERSCORE>)* >  
+  
 }
 
 // ***************************************************************************
@@ -151,7 +153,10 @@ ASTProgram Program() : {/*@bgen(jjtree) Program */
 {/*@bgen(jjtree) Program */
   try {
 /*@egen*/
-  Body() <SEMI>/*@bgen(jjtree)*/
+  (Num() | ArithExpr())
+  
+  
+  <SEMI>/*@bgen(jjtree)*/
   {
     jjtree.closeNodeScope(jjtn000, true);
     jjtc000 = false;
@@ -181,52 +186,32 @@ ASTProgram Program() : {/*@bgen(jjtree) Program */
 }
 
 // ***************************************************************************
+/*
+void SExpr():
+{ }
+{
+  (Num() | Identifier() | ArithExpr() | LambdaExpr() | FuncApp() | LetExpr())
+  
+}
+*/
+
+// ***************************************************************************
+/*
 void Body():
-{/*@bgen(jjtree) Body */
-  ASTBody jjtn000 = new ASTBody(JJTBODY);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
-{/*@bgen(jjtree) Body */
-try {
-/*@egen*/
+{}
+{
 LOOKAHEAD(2)
  <LPAR> <LPAR>
         Lambda()
  | Expr()
- | Num()/*@bgen(jjtree)*/
-} catch (Throwable jjte000) {
-  if (jjtc000) {
-    jjtree.clearNodeScope(jjtn000);
-    jjtc000 = false;
-  } else {
-    jjtree.popNode();
-  }
-  if (jjte000 instanceof RuntimeException) {
-    throw (RuntimeException)jjte000;
-  }
-  if (jjte000 instanceof ParseException) {
-    throw (ParseException)jjte000;
-  }
-  throw (Error)jjte000;
-} finally {
-  if (jjtc000) {
-    jjtree.closeNodeScope(jjtn000, true);
-  }
+ | Num()
 }
-/*@egen*/
-}
+
 // ***************************************************************************
 void Lambda() :
-{/*@bgen(jjtree) Lambda */
-  ASTLambda jjtn000 = new ASTLambda(JJTLAMBDA);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
-{/*@bgen(jjtree) Lambda */
-        try {
-/*@egen*/
-    /* Case: Lambda Expression */
+{}
+{
+    //Case: Lambda Expression
 
         <LAMBDA>
         <LPAR>
@@ -235,40 +220,21 @@ void Lambda() :
     Body()
         <RPAR>
     Body()
-        <RPAR>/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
-/*@egen*/
+        <RPAR>
 }
+*/
 // ***************************************************************************
-void Expr(): {/*@bgen(jjtree) Expr */
-               ASTExpr jjtn000 = new ASTExpr(JJTEXPR);
-               boolean jjtc000 = true;
-               jjtree.openNodeScope(jjtn000);
+void ArithExpr(): {/*@bgen(jjtree) ArithExpr */
+                    ASTArithExpr jjtn000 = new ASTArithExpr(JJTARITHEXPR);
+                    boolean jjtc000 = true;
+                    jjtree.openNodeScope(jjtn000);
 /*@egen*/ Token t; String s; }
-{/*@bgen(jjtree) Expr */
+{/*@bgen(jjtree) ArithExpr */
   try {
 /*@egen*/
   <LPAR>
 	t = <OP>{ s = t.image; jjtn000.setOp(s); }
-      (Num() | Expr() )+
+      (Num() | ArithExpr() )+
    
   <RPAR>/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
@@ -295,21 +261,21 @@ void Expr(): {/*@bgen(jjtree) Expr */
 }
 
 // ***************************************************************************
-void Num(): 
-{/*@bgen(jjtree) Num */
-  ASTNum jjtn000 = new ASTNum(JJTNUM);
+void Identifier(): 
+{/*@bgen(jjtree) Identifier */
+  ASTIdentifier jjtn000 = new ASTIdentifier(JJTIDENTIFIER);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/ Token t; }
-{/*@bgen(jjtree) Num */
+{/*@bgen(jjtree) Identifier */
   try {
 /*@egen*/
-  t = <INTEGER>/*@bgen(jjtree)*/
-                {
-                  jjtree.closeNodeScope(jjtn000, true);
-                  jjtc000 = false;
-                }
-/*@egen*/ { jjtn000.setVal(Integer.parseInt(t.image)); }/*@bgen(jjtree)*/
+  t = <SYMBOL>/*@bgen(jjtree)*/
+               {
+                 jjtree.closeNodeScope(jjtn000, true);
+                 jjtc000 = false;
+               }
+/*@egen*/ { jjtn000.setIdentifier(t.image); }/*@bgen(jjtree)*/
   } finally {
     if (jjtc000) {
       jjtree.closeNodeScope(jjtn000, true);
@@ -319,3 +285,27 @@ void Num():
 
 }
 
+// ***************************************************************************
+void Num(): 
+{/*@bgen(jjtree) Num */
+  ASTNum jjtn000 = new ASTNum(JJTNUM);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/ Token t; }
+{/*@bgen(jjtree) Num */
+  try {
+/*@egen*/
+  t = <DIGIT>/*@bgen(jjtree)*/
+              {
+                jjtree.closeNodeScope(jjtn000, true);
+                jjtc000 = false;
+              }
+/*@egen*/ { jjtn000.setVal(Integer.parseInt(t.image)); }/*@bgen(jjtree)*/
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
+/*@egen*/
+
+}
