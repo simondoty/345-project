@@ -7,37 +7,95 @@
  Group Project 1A
  LispParser - Lisp Parser and Interpreter 
 *******************************************************************************/
-
 options {
              
                
                           
+  STATIC=false;
 }
 
 PARSER_BEGIN(LispParser)
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Scanner;
+
+
 public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
-  protected static JJTLispParserState jjtree = new JJTLispParserState();
+  protected JJTLispParserState jjtree = new JJTLispParserState();
 
 /*@egen*/
   public static void main(String args[]) {
-    System.out.println("Reading from standard input...");
-    LispParser p = new LispParser(System.in);
+    System.out.println("Welcome to Lisp Parser. Type commands or quit.");
+
+    boolean bQuit = false;
+    
+    do {
+      System.out.print("> ");      
+      
+      // read a line of input
+      String sInput = "";
+      Scanner scanIn = new Scanner(System.in);
+      sInput = scanIn.nextLine();
+      
+      if(sInput.equals("quit"))
+        bQuit = true;
+
+      else if(sInput.equals("test")) {
+        RunTests(); 
+     
+      } else {                    
+        RunCommand(sInput + ";");
+                   
+      }
+              
+    } while(!bQuit);
+
+    System.out.println("Parse Completed Successfully.");     
+      
+  }
+  
+  // *************************************************************************
+  public static void RunCommand(String sCommand_) {
     try {
+  
+      // build ast from stream created from the input command
+      InputStream in = new ByteArrayInputStream(sCommand_.getBytes());          
+      LispParser p = new LispParser(in);        
       ASTProgram root = p.Program();
+      
+      // print the AST
       LispParserVisitor v = new LispParserDumpVisitor();
       root.jjtAccept(v, null);
+      
+      // interpret the AST
       LispParserVisitor i = new LispParserInterpreterVisitor();
+      System.out.println(root.jjtAccept(i, null) );    
+
       
-      System.out.println(root.jjtAccept(i, null) );
-      
-      System.out.println("Parse Completed Successfully.");
     } catch (Exception e) {
       System.out.println("Oops.");
       System.out.println(e.getMessage());
       e.printStackTrace();
     }
+    
   }
+  
+  // **************************************************************************
+  public static void RunTests() {
+    System.out.println("**************** test 1: 5 **************************");
+    RunCommand("5");
+    System.out.println("**************** test 2: (+ 3 4 5) **************************");    
+    RunCommand("(+ 3 4 5)");
+    System.out.println("**************** test 3: (- 3 1) **************************");        
+    RunCommand("(- 3 1)");
+    System.out.println("**************** test 4: (* 7 9) **************************");              
+    RunCommand("(* 7 9)");
+    System.out.println("**************** test 5: (+ 3 4 (* 7 (- 4 2))) **************************");                  
+    RunCommand("(+ 3 4 (* 7 (- 4 2)))");
+  
+  }
+  
 }
 
 PARSER_END(LispParser)
