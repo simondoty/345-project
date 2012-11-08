@@ -1,5 +1,5 @@
 /* Interpreter Visitor */
-
+package Lisp;
 public class LispParserInterpreterVisitor implements LispParserVisitor
 {
   private int indent = 0;
@@ -112,6 +112,58 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
   public Object visit(ASTLambdaExpr node, Object data) {
     // just return self.
     return node;
+      
+  }
+  
+  // *********************************************************************
+  
+  // E.g. ((lambda (x) x) 3)
+  
+  // Child 0   = Lambda()                  = (lambda (x) x)
+  // Child 0.0 = Identifier()              = x                ==> param
+  // Child 0.1 = Anything() = Identifier() = x                ==> body
+  
+  // Child 1   = Anything() = Num()        = 3                ==> arg
+  
+  public Object visit(ASTFunctionExpr node, Object data) {
+    // get param id of lambda expr - DO NOT EVAL
+    ASTIdentifier param = (ASTIdentifier) node.jjtGetChild(0).jjtGetChild(0);
+
+    // get body of lambda expr - DO NOT EVAL
+    Node body = node.jjtGetChild(0).jjtGetChild(1);
+
+    // "evaluate" child argument. this would require an environment to build.
+    Object arg = node.jjtGetChild(1).jjtAccept(this, data);   
+    
+    // call replace method
+    // body can be:
+    // number
+    // identifier
+    // lambda expression
+    // lambda applicatoin
+    
+    for(int iChild=0;iChild < body.jjtGetNumChildren(); iChild++) {
+      Node n = body.jjtGetChild(iChild);
+      
+      // based on body child, try to replace or not.
+      if(n instanceof ASTIdentifier) {
+        ASTIdentifier ident = (ASTIdentifier) n;
+      
+        // if part of body matches parameter,
+        if(ident.getIdentifier().equals(param.getIdentifier()  )    ) {
+          // replace that part of body with the passed-in argument.
+          body.children[iChild]  = (Node) arg;
+        
+        }
+      
+      }
+    
+    }
+      
+    // just return self.
+    return body.jjtAccept(this, data);
+  
+  }
   
   /*
     System.out.println(indentString() + node);
@@ -120,8 +172,6 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     --indent;
     return data;
   */
-    
-  }
 
  /*
       public Object visit(ASTBody node, Object data) {

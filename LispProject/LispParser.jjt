@@ -149,8 +149,10 @@ ASTProgram Program() : {}
 {
 
 (  Num()
-  | ( LOOKAHEAD(2) LambdaExpr() | ArithExpr() ))
-    
+   | (   LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr()
+     )
+)
+      
   { return jjtThis; }
   
 }
@@ -180,6 +182,21 @@ LOOKAHEAD(2)
 */
 
 // ***************************************************************************
+void FunctionExpr() :
+{}
+{
+ <LPAR> LambdaExpr()
+
+(  Num()
+  | ( LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr() | Identifier()
+    )
+  
+)
+    <RPAR>
+}
+
+
+// ***************************************************************************
 void LambdaExpr() :
 {}
 {
@@ -189,10 +206,13 @@ void LambdaExpr() :
     <LPAR>
     Identifier()
     <RPAR>
-    
-  (Num() | ArithExpr())
-//LOOKAHEAD(2)
- //   (Num() | ArithExpr() | LambdaExpr())
+
+(  Num()
+  | ( LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr() | Identifier()
+    )
+
+)
+
     <RPAR>
 }
 

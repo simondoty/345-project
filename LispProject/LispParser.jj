@@ -159,20 +159,15 @@ try {
 /*@egen*/
 
 (  Num()
-  | ( LOOKAHEAD(2) LambdaExpr() | ArithExpr() ))/*@bgen(jjtree)*/
+   | (   LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr()
+     )
+)/*@bgen(jjtree)*/
   {
     jjtree.closeNodeScope(jjtn000, true);
     jjtc000 = false;
   }
 /*@egen*/
-  // | LOOKAHEAD(ArithExpr()) ArithExpr() )
-/*
-   ( LambdaExpr())
-    | (ArithExpr())
-    | Num()
-    | Identifier())
-*/
-  
+      
   { return jjtn000; }/*@bgen(jjtree)*/
 } catch (Throwable jjte000) {
   if (jjtc000) {
@@ -222,6 +217,47 @@ LOOKAHEAD(2)
 */
 
 // ***************************************************************************
+void FunctionExpr() :
+{/*@bgen(jjtree) FunctionExpr */
+  ASTFunctionExpr jjtn000 = new ASTFunctionExpr(JJTFUNCTIONEXPR);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) FunctionExpr */
+ try {
+/*@egen*/
+ <LPAR> LambdaExpr()
+
+(  Num()
+  | ( LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr() | Identifier()
+    )
+  
+)
+    <RPAR>/*@bgen(jjtree)*/
+ } catch (Throwable jjte000) {
+   if (jjtc000) {
+     jjtree.clearNodeScope(jjtn000);
+     jjtc000 = false;
+   } else {
+     jjtree.popNode();
+   }
+   if (jjte000 instanceof RuntimeException) {
+     throw (RuntimeException)jjte000;
+   }
+   if (jjte000 instanceof ParseException) {
+     throw (ParseException)jjte000;
+   }
+   throw (Error)jjte000;
+ } finally {
+   if (jjtc000) {
+     jjtree.closeNodeScope(jjtn000, true);
+   }
+ }
+/*@egen*/
+}
+
+
+// ***************************************************************************
 void LambdaExpr() :
 {/*@bgen(jjtree) LambdaExpr */
   ASTLambdaExpr jjtn000 = new ASTLambdaExpr(JJTLAMBDAEXPR);
@@ -237,10 +273,13 @@ void LambdaExpr() :
     <LPAR>
     Identifier()
     <RPAR>
-    
-  (Num() | ArithExpr())
-//LOOKAHEAD(2)
- //   (Num() | ArithExpr() | LambdaExpr())
+
+(  Num()
+  | ( LOOKAHEAD(2) LambdaExpr() | ArithExpr() | FunctionExpr() | Identifier()
+    )
+
+)
+
     <RPAR>/*@bgen(jjtree)*/
  } catch (Throwable jjte000) {
    if (jjtc000) {
