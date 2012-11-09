@@ -77,7 +77,7 @@ public class LispParserDumpVisitor implements LispParserVisitor
       
   // *********************************************************************      
   public Object visit(ASTLambdaExpr node, Object data) {
-    System.out.println(indentString() + "fun");
+    System.out.println(indentString() + "LambdaExpr");
     ++indent;
     data = node.childrenAccept(this, data);
     --indent;
@@ -86,13 +86,21 @@ public class LispParserDumpVisitor implements LispParserVisitor
  
   // *********************************************************************      
   public Object visit(ASTFunctionExpr node, Object data) {
-    System.out.println(indentString() + "app");
+    System.out.println(indentString() + "FuncExpr");
     ++indent;
     data = node.childrenAccept(this, data);
     --indent;
     return data;
   }
 
+ // *********************************************************************      
+  public Object visit(ASTNamedFunctionApp node, Object data) {
+    System.out.println(indentString() + "NamedFuncApp");
+    ++indent;
+    data = node.childrenAccept(this, data);
+    --indent;
+    return data;
+  }
  /*
     public Object visit(ASTBody node, Object data) {
     //System.out.println(indentString() + node);

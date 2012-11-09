@@ -106,6 +106,26 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     //since this is a num, just return value
     return node.getVal();
   }
+  
+  // *********************************************************************
+  	public Object visit(ASTNamedFunctionApp node, Object data) {
+    //since this is a num, just return value
+    
+    Node app = new ASTFunctionExpr(0);
+    /*String funcID = (String) node.jjtGetChild(0).jjtAccept(this, data);
+    Node func=  null;
+    for (TreeMap<String, Object> t : env) {
+      if (t.containsKey(funcID)){
+        func = (Node) t.get(funcID);
+      }  
+    }*/
+    //Node test = (Node) node.jjtGetChild(0).jjtAccept(this, data);
+    //System.out.println( test.jjtGetChild(1).jjtGetChild(0));
+    app.jjtAddChild((Node) node.jjtGetChild(0).jjtAccept(this, data), 0);
+    app.jjtAddChild((Node) node.jjtGetChild(1), 1);   
+    
+    return app.jjtAccept(this, data);
+  }
 
   // FOR CHANGING TO DYNAMIC SCOPING, YOU MAY JUST HAVE TO TRAVERSE THROUGH
   // THE ARRAYLIST "ENV" THE OTHER WAY
@@ -151,42 +171,15 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     // "evaluate" child argument. this would require an environment to build.
     Object arg = node.jjtGetChild(1).jjtAccept(this, data);   
     
+    // if arg is a lambdaExpr (a function without application), store it in the env.
+    
+    
     // try adding a String, int map to the env arraylist
     TreeMap<String, Object> pair = new TreeMap<String, Object>();
     pair.put(param.getIdentifier(), arg);    
-    
+    System.out.println("Printing pair added to env: key is:  " + param.getIdentifier() + " and value is:  " + arg);
     env.add(pair);
     
-    
-    // call replace method
-    // body can be:
-    // number
-    // identifier
-    // lambda expression
-    // lambda applicatoin
-    
-    
-    /*
-    for(int iChild=0;iChild < body.jjtGetNumChildren(); iChild++) {
-      Node n = body.jjtGetChild(iChild);
-      
-      // based on body child, try to replace or not.
-      if(n instanceof ASTIdentifier) {
-        ASTIdentifier ident = (ASTIdentifier) n;
-      
-        // if part of body matches parameter,
-        if(ident.getIdentifier().equals(param.getIdentifier()  )    ) {
-          // replace that part of body with the passed-in argument.
-          body.children[iChild]  = (Node) arg;
-        
-        }
-      
-      }
-    
-    }
-    
-    */
-      
     // just return self.
     return body.jjtAccept(this, data);
   

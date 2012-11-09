@@ -188,11 +188,32 @@ void FunctionExpr() :
  <LPAR> LambdaExpr()
 
 (  Num()
+
   | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
 
   
 )
     <RPAR>
+}
+
+
+// ***************************************************************************
+/*
+ Need to be able to parse this: ((lambda (d) (d 10)) (lambda (x) (+ x x) ))
+
+*/
+void NamedFunctionApp() :
+{}
+{
+<LPAR> Identifier() 
+
+//( 
+Num()
+
+  //| ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
+  
+//)
+   <RPAR>
 }
 
 
@@ -206,9 +227,9 @@ void LambdaExpr() :
     <LPAR>
     Identifier()
     <RPAR>
-
+// get body
 (  Num()
-  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
+  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | Identifier()  | LOOKAHEAD(2) NamedFunctionApp() )
  
 
 )
@@ -239,6 +260,6 @@ void Identifier():
 void Num(): 
 { Token t; }
 {
-  t = <DIGIT> { jjtThis.setVal(Integer.parseInt(t.image)); }
+  t = <INTEGER> { jjtThis.setVal(Integer.parseInt(t.image)); }
 
 }

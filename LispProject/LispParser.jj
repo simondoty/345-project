@@ -229,6 +229,7 @@ void FunctionExpr() :
  <LPAR> LambdaExpr()
 
 (  Num()
+
   | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
 
   
@@ -258,6 +259,52 @@ void FunctionExpr() :
 
 
 // ***************************************************************************
+/*
+ Need to be able to parse this: ((lambda (d) (d 10)) (lambda (x) (+ x x) ))
+
+*/
+void NamedFunctionApp() :
+{/*@bgen(jjtree) NamedFunctionApp */
+  ASTNamedFunctionApp jjtn000 = new ASTNamedFunctionApp(JJTNAMEDFUNCTIONAPP);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) NamedFunctionApp */
+try {
+/*@egen*/
+<LPAR> Identifier() 
+
+//( 
+Num()
+
+  //| ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
+  
+//)
+   <RPAR>/*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+  if (jjtc000) {
+    jjtree.clearNodeScope(jjtn000);
+    jjtc000 = false;
+  } else {
+    jjtree.popNode();
+  }
+  if (jjte000 instanceof RuntimeException) {
+    throw (RuntimeException)jjte000;
+  }
+  if (jjte000 instanceof ParseException) {
+    throw (ParseException)jjte000;
+  }
+  throw (Error)jjte000;
+} finally {
+  if (jjtc000) {
+    jjtree.closeNodeScope(jjtn000, true);
+  }
+}
+/*@egen*/
+}
+
+
+// ***************************************************************************
 void LambdaExpr() :
 {/*@bgen(jjtree) LambdaExpr */
   ASTLambdaExpr jjtn000 = new ASTLambdaExpr(JJTLAMBDAEXPR);
@@ -273,9 +320,9 @@ void LambdaExpr() :
     <LPAR>
     Identifier()
     <RPAR>
-
+// get body
 (  Num()
-  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
+  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | Identifier()  | LOOKAHEAD(2) NamedFunctionApp() )
  
 
 )
@@ -375,11 +422,11 @@ void Num():
 {/*@bgen(jjtree) Num */
   try {
 /*@egen*/
-  t = <DIGIT>/*@bgen(jjtree)*/
-              {
-                jjtree.closeNodeScope(jjtn000, true);
-                jjtc000 = false;
-              }
+  t = <INTEGER>/*@bgen(jjtree)*/
+                {
+                  jjtree.closeNodeScope(jjtn000, true);
+                  jjtc000 = false;
+                }
 /*@egen*/ { jjtn000.setVal(Integer.parseInt(t.image)); }/*@bgen(jjtree)*/
   } finally {
     if (jjtc000) {
