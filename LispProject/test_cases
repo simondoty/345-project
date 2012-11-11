@@ -1,0 +1,48 @@
+
+From Homework 3:
+;; (calc (parse '5) )
+;; (calc (parse '{+ 5 5}) )
+;; (calc (parse '{with {x {+ 5 5}} {+ x x}}) )
+;; (calc (parse '{with {x 5} {+ x x}}) )
+;; (calc (parse '{with {x {+ 5 5}} {with {y {- x 3}} {+ y y}}}) )
+;; (calc (parse '{with {x 5} {with {y {- x 3}} {+ y y}}}) )
+;; (calc (parse '{with {x 5} {+ x {with {x 3} 10}}}) )
+;; (calc (parse '{with {x 5} {+ x {with {x 3} x}}}) )
+;; (calc (parse '{with {x 5} {+ x {with {y 3} x}}}) )
+;; (calc (parse '{with {x 5} {with {y x} y}}) )
+;; (calc (parse '{with {x 5} {with {x x} x}}) )
+
+
+;; (calc (parse '5) )
+5
+
+;; (calc (parse '{+ 5 5}) )
+(+ 5 5)
+
+;; (calc (parse '{with {x {+ 5 5}} {+ x x}}) )
+(let (( x (+ 5 5) )) (+ x x))
+
+;; (calc (parse '{with {x 5} {+ x x}}) )
+(let ((x 5)) (+ x x))
+
+
+;; (calc (parse '{with {x {+ 5 5}} {with {y {- x 3}} {+ y y}}}) )
+(let (( x (+ 5 5) )) (let (( y (- x 3) )) (+ y y) ))
+
+;; (calc (parse '{with {x 5} {with {y {- x 3}} {+ y y}}}) )
+(let (( x 5 )) (let (( y (- x 3) )) (+ y y) ))
+
+;; (calc (parse '{with {x 5} {+ x {with {x 3} 10}}}) )
+(let (( x 5)) (+ x (let ((x 3)) 10)))
+
+;; (calc (parse '{with {x 5} {+ x {with {x 3} x}}}) )
+(let ((x 5)) (+ x (let (( x 3)) x)))
+
+;; (calc (parse '{with {x 5} {+ x {with {y 3} x}}}) )
+(let (( x 5)) (+ x (let (( y 3 )) x)))
+
+;; (calc (parse '{with {x 5} {with {y x} y}}) )
+(let (( x 5)) (let (( y x )) y))
+
+;; (calc (parse '{with {x 5} {with {x x} x}}) )
+(let (( x 5 )) (let (( x x )) x))
