@@ -43,56 +43,56 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     String sOp = node.getOp();
     
     if(sOp.equals("+")) {
-      int sum = 0;
+      double sum = 0;
       
       for(int iChild=0;iChild < node.jjtGetNumChildren(); iChild++) {
       
         Node chile = node.jjtGetChild(iChild);
         Object result = chile.jjtAccept(this, data);
         
-        sum += (Integer) result;
+        sum += (Double) result;
         
       }
       
-      return (Integer) sum;
+      return sum;
     
     } else if(sOp.equals("-")) {
       // first child minus the rest
-      int diff = (Integer) node.jjtGetChild(0).jjtAccept(this, data);      
+      double diff = (Double) node.jjtGetChild(0).jjtAccept(this, data);      
       
       for(int iChild=1;iChild < node.jjtGetNumChildren(); iChild++) {
     		Object result = node.jjtGetChild(iChild).jjtAccept(this, data);      
         
-        diff -= (Integer) result;
+        diff -= (Double) result;
         
       }
       
-      return (Integer) diff;    
+      return diff;    
     
    
     } else if(sOp.equals("*")) {
-      int prod = 1;
+      double prod = 1;
       
       for(int iChild=0;iChild < node.jjtGetNumChildren(); iChild++) {
     		Object result = node.jjtGetChild(iChild).jjtAccept(this, data);      
         
-        prod *= (Integer) result;
+        prod *= (Double) result;
         
       }
       
-      return (Integer) prod;    
+      return prod;    
     
     } else if(sOp.equals("/")) {
-      int div = (Integer) node.jjtGetChild(0).jjtAccept(this, data);      
+      double div = (Double) node.jjtGetChild(0).jjtAccept(this, data);      
       
       for(int iChild=1;iChild < node.jjtGetNumChildren(); iChild++) {
     		Object result = node.jjtGetChild(iChild).jjtAccept(this, data);      
         
-        div /= (Integer) result;
+        div /= (Double) result;
         
       }
       
-      return (Integer) div;     
+      return div;     
     
     } else {
       return null;

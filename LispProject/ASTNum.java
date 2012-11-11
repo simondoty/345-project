@@ -1,7 +1,7 @@
 public
 class ASTNum extends SimpleNode {
 
-	private int value;
+	private double value;
  
   public ASTNum (int id) {
     super(id);
@@ -11,11 +11,15 @@ class ASTNum extends SimpleNode {
     super(p, id);
   }
 
-	public void setVal (int i) {
+	public void setVal (double i) {
 		value = i;
 	}
-
-	public int getVal() {
+	
+	public void setVal (int i) {
+		value = (double) i;
+	}
+	
+	public double getVal() {
 		return value;
 	}
 	

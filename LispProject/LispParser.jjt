@@ -150,6 +150,7 @@ TOKEN : /* LITERALS */
 {
     < LAMBDA : "lambda" >
   | < LET    : "let" >
+  | < DOUBLE         :  (<DIGIT>)* ["."] (<DIGIT>)+ >  
   | < INTEGER         :  (<DIGIT>)+ >
   | < IDENTIFIER    :  <LETTER> (<DIGIT> | <LETTER> | <UNDERSCORE> | <SYMBOL>)* >  
   
@@ -230,7 +231,7 @@ void FunctionExpr() :
 
 (  Num()
 
-  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
+   | (   LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(3) NamedFunctionApp() )
 
   
 )
@@ -249,7 +250,7 @@ void NamedFunctionApp() :
 <LPAR> (Identifier() | FunctionExpr())
 
 //( 
-(Num() | FunctionExpr())
+(Num() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(3) NamedFunctionApp() | Identifier())
 
   //| ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
   
@@ -270,7 +271,7 @@ void LambdaExpr() :
     <RPAR>
 // get body
 (  Num()
-  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | Identifier()  | LOOKAHEAD(2) NamedFunctionApp() )
+   | (   LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(3) NamedFunctionApp() )
  
 
 )
@@ -283,7 +284,7 @@ void ArithExpr(): { Token t; String s; }
 {
 <LPAR> 
 	t = <OP>{ s = t.image; jjtThis.setOp(s); }
-      ( Num() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(2) FunctionExpr() | Identifier() )+
+      (LOOKAHEAD(3) NamedFunctionApp() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr()| LOOKAHEAD(2) NamedFunctionApp()| Num() | Identifier() )+
    
   <RPAR>
 
@@ -302,7 +303,7 @@ void Num():
 { Token t; }
 {
   t = <INTEGER> { jjtThis.setVal(Integer.parseInt(t.image)); }
-
+| t = <DOUBLE> {jjtThis.setVal(Double.parseDouble(t.image)); }
 }
 
 String lambdaExpr() #void :
@@ -343,6 +344,7 @@ String lambdaExpr() #void :
 
 /* CASE : NUMBER: could be Positive, Negative, Float, or Integer */
   |          n = <INTEGER>   { String B = n.toString(); return B; } 
+  |          n = <DOUBLE>    { String D = n.toString(); return D; }
 
 /* CASE : SYMBOL: anything but Parentheses */
   |          n = <IDENTIFIER>   { String C = n.toString(); return C; }

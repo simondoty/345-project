@@ -154,6 +154,7 @@ TOKEN : /* LITERALS */
 {
     < LAMBDA : "lambda" >
   | < LET    : "let" >
+  | < DOUBLE         :  (<DIGIT>)* ["."] (<DIGIT>)+ >  
   | < INTEGER         :  (<DIGIT>)+ >
   | < IDENTIFIER    :  <LETTER> (<DIGIT> | <LETTER> | <UNDERSCORE> | <SYMBOL>)* >  
   
@@ -271,7 +272,7 @@ void FunctionExpr() :
 
 (  Num()
 
-  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
+   | (   LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(3) NamedFunctionApp() )
 
   
 )
@@ -316,7 +317,7 @@ try {
 <LPAR> (Identifier() | FunctionExpr())
 
 //( 
-(Num() | FunctionExpr())
+(Num() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(3) NamedFunctionApp() | Identifier())
 
   //| ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
   
@@ -363,7 +364,7 @@ void LambdaExpr() :
     <RPAR>
 // get body
 (  Num()
-  | ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | Identifier()  | LOOKAHEAD(2) NamedFunctionApp() )
+   | (   LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(3) NamedFunctionApp() )
  
 
 )
@@ -402,7 +403,7 @@ try {
 /*@egen*/
 <LPAR> 
 	t = <OP>{ s = t.image; jjtn000.setOp(s); }
-      ( Num() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(2) FunctionExpr() | Identifier() )+
+      (LOOKAHEAD(3) NamedFunctionApp() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr()| LOOKAHEAD(2) NamedFunctionApp()| Num() | Identifier() )+
    
   <RPAR>/*@bgen(jjtree)*/
 } catch (Throwable jjte000) {
@@ -468,14 +469,19 @@ void Num():
                   jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
                 }
-/*@egen*/ { jjtn000.setVal(Integer.parseInt(t.image)); }/*@bgen(jjtree)*/
+/*@egen*/ { jjtn000.setVal(Integer.parseInt(t.image)); }
+| t = <DOUBLE>/*@bgen(jjtree)*/
+               {
+                 jjtree.closeNodeScope(jjtn000, true);
+                 jjtc000 = false;
+               }
+/*@egen*/ {jjtn000.setVal(Double.parseDouble(t.image)); }/*@bgen(jjtree)*/
   } finally {
     if (jjtc000) {
       jjtree.closeNodeScope(jjtn000, true);
     }
   }
 /*@egen*/
-
 }
 
 String lambdaExpr()       :
@@ -516,6 +522,7 @@ String lambdaExpr()       :
 
 /* CASE : NUMBER: could be Positive, Negative, Float, or Integer */
   |          n = <INTEGER>   { String B = n.toString(); return B; } 
+  |          n = <DOUBLE>    { String D = n.toString(); return D; }
 
 /* CASE : SYMBOL: anything but Parentheses */
   |          n = <IDENTIFIER>   { String C = n.toString(); return C; }
