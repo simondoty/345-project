@@ -2,17 +2,25 @@
 
 PARSER_BEGIN(Parser)
 
-    import java.io.*;
-    import java.util.*;
+/** An Arithmetic Grammar. */
+public class Eg1 {
 
-    public class Parser {
-        public static void main(String args[]) throws ParseException {
-            Parser parser = new Parser (System.in);
-            System.out.println(parser.expr());
-          //  parser.output();
-        }
+  /** Main entry point. */
+  public static void main(String args[]) {
+    System.out.println("Reading from standard input...");
+    Parser t = new Parser(System.in);
+    try {
+      SimpleNode n = t.Start();
+      n.dump("");
+      System.out.println("Thank you.");
+    } catch (Exception e) {
+      System.out.println("Oops.");
+      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
-
+  }
+}
+   
 PARSER_END(Parser)
 
 SKIP:
@@ -82,38 +90,18 @@ void output() :
   | <OP>        { System.out.print("op "); output(); }
 }
 
-/* Not used */
-String let() :
-{ Token n; }
-{
-    <LPAR>
-    <LPAR>
-n = <SYMBOL> { String A = "(" + n.toString() + ") "; String B = lambdaExpr(); }
-{ String let = A + " " + B; return let; }
-
-}
-
-/* Not used */
-String lambda() :
-{ Token n; }
-{
-    <LAMBDA>
-    <LPAR>
-n = <SYMBOL> { String A = n.toString(); }
-    <RPAR>
-{ return A; }
-}
-
-/*
-String body() :
-{ Token n; }
-{
-}
-*/
 
 String javaLambda() :
 { Token n; String v; }
 { {return "";}
+}
+
+
+/** Main production. */
+SimpleNode Start() : {}
+{
+  Expression() ";"
+  { return jjtThis; }
 }
 
 SExpr expr() :
@@ -186,14 +174,6 @@ SExpr body() :
                     System.out.println(evaluated);
                     return evaluated;
                  }
-}
-
-/* Not used */
-String opVal() :
-{Token n; }
-{
-  n = <SYMBOL> { return n.toString(); }
-| n = <NUMBER> { return n.toString(); }
 }
 
 
