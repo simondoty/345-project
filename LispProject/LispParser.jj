@@ -99,19 +99,11 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants/*@ege
       // interpret the AST
       LispParserVisitor i = new LispParserInterpreterVisitor();
       
-      // get arraylist env
-      /*
-      ArrayList<TreeMap<String, Object>> env = i.getEnv();
-      for(int j = 0; j < env.size(); j++) {
-      
-        System.out.println("arraylist index "  + j
-      
-      }
-      */
+      // get arraylist env     
       
       System.out.println("Interpreted Result: " + root.jjtAccept(i, null) );    
-
-      
+	  
+	 
     } catch (Exception e) {
       System.out.println("Oops.");
       System.out.println(e.getMessage());
@@ -174,7 +166,7 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants/*@ege
     RunCommand("(let (( x 3)) (let ((f (lambda (y) (+ x y)))) (f 4)))");
 
     System.out.println("**************** test 20: (let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10)))) ************");
-    RunCommand("(let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((d/dx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (d/dx 10))))");
+    RunCommand("(let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10))))");
 
   }
   

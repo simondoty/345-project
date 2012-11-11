@@ -16,7 +16,7 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     return sb.toString();
   }
   
-  public ArrayList getEnv() { 
+  public ArrayList<TreeMap<String, Object>> getEnv() { 
     return env;
   }
    
@@ -186,7 +186,7 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     pair.put(param.getIdentifier(), arg);    
     System.out.println("Printing pair added to env: key is:  " + param.getIdentifier() + " and value is:  " + arg);
     env.add(pair);
-    
+     
     // just return self.
     return body.jjtAccept(this, data);
   
