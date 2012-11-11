@@ -83,15 +83,7 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, Lisp
       // interpret the AST
       LispParserVisitor i = new LispParserInterpreterVisitor();
 
-      // get arraylist env
-      /*
-      ArrayList<TreeMap<String, Object>> env = i.getEnv();
-      for(int j = 0; j < env.size(); j++) {
-      
-        System.out.println("arraylist index "  + j
-      
-      }
-      */
+      // get arraylist env     
 
       System.out.println("Interpreted Result: " + root.jjtAccept(i, null) );
 
@@ -807,6 +799,23 @@ void FunctionApp() :
     finally { jj_save(22, xla); }
   }
 
+  private boolean jj_3_23() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
+  private boolean jj_3_5() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  private boolean jj_3_22() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(OP)) return true;
+    return false;
+  }
+
   private boolean jj_3_8() {
     if (jj_3R_7()) return true;
     return false;
@@ -910,11 +919,6 @@ void FunctionApp() :
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
   private boolean jj_3_16() {
     if (jj_3R_7()) return true;
     return false;
@@ -922,6 +926,11 @@ void FunctionApp() :
 
   private boolean jj_3_10() {
     if (jj_3R_6()) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_3R_4()) return true;
     return false;
   }
 
@@ -1034,23 +1043,6 @@ void FunctionApp() :
     }
     }
     }
-    return false;
-  }
-
-  private boolean jj_3_23() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_3R_8()) return true;
-    return false;
-  }
-
-  private boolean jj_3_5() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  private boolean jj_3_22() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_scan_token(OP)) return true;
     return false;
   }
 

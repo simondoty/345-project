@@ -99,19 +99,11 @@ public class LispParser {
       // interpret the AST
       LispParserVisitor i = new LispParserInterpreterVisitor();
       
-      // get arraylist env
-      /*
-      ArrayList<TreeMap<String, Object>> env = i.getEnv();
-      for(int j = 0; j < env.size(); j++) {
-      
-        System.out.println("arraylist index "  + j
-      
-      }
-      */
+      // get arraylist env     
       
       System.out.println("Interpreted Result: " + root.jjtAccept(i, null) );    
-
-      
+	  
+	 
     } catch (Exception e) {
       System.out.println("Oops.");
       System.out.println(e.getMessage());
