@@ -94,6 +94,17 @@ public class LispParser {
       
       // interpret the AST
       LispParserVisitor i = new LispParserInterpreterVisitor();
+      
+      // get arraylist env
+      /*
+      ArrayList<TreeMap<String, Object>> env = i.getEnv();
+      for(int j = 0; j < env.size(); j++) {
+      
+        System.out.println("arraylist index "  + j
+      
+      }
+      */
+      
       System.out.println("Interpreted Result: " + root.jjtAccept(i, null) );    
 
       
@@ -127,6 +138,39 @@ public class LispParser {
     RunCommand("(let ((x 3)) (* x x x x))");
     System.out.println("**************** test 9: (let ((x 10)) (let ((y 20)) (+ x y)        )) **************************");                  
     RunCommand("(let ((x 10)) (let ((y 20)) (+ x y)        ))");
+    
+    System.out.println("**************** test 10: (let (( x (+ 5 5) )) (+ x x)) **************************");                  
+    RunCommand("(let (( x (+ 5 5) )) (+ x x))");
+    
+    System.out.println("**************** test 11: (let (( x (+ 5 5) )) (let (( y (- x 3) )) (+ y y) ))   )) **************************");                  
+    RunCommand("(let (( x (+ 5 5) )) (let (( y (- x 3) )) (+ y y) ))");
+    
+    System.out.println("**************** test 12: (let (( x 5 )) (let (( y (- x 3) )) (+ y y) ))   )) **************************");                  
+    RunCommand("(let (( x 5 )) (let (( y (- x 3) )) (+ y y) ))");
+    
+    System.out.println("**************** test 13: (let (( x 5)) (+ x (let ((x 3)) 10)))      )) **************************");                  
+    RunCommand("(let (( x 5)) (+ x (let ((x 3)) 10)))");
+    
+    System.out.println("**************** test 14: (let ((x 5)) (+ x (let (( x 3)) x)))   )) **************************");                  
+    RunCommand("(let ((x 5)) (+ x (let (( x 3)) x)))");
+    
+    System.out.println("**************** test 15: (let (( x 5)) (+ x (let (( y 3 )) x)))    )) **************************");                  
+    RunCommand("(let (( x 5)) (+ x (let (( y 3 )) x)))");
+    
+    System.out.println("**************** test 16: (let (( x 5)) (let (( y x )) y))   )) **************************");                  
+    RunCommand("(let (( x 5)) (let (( y x )) y))");
+    
+    System.out.println("**************** test 17: (let (( x 5 )) (let (( x x )) x)))) **************************");                  
+    RunCommand("(let (( x 5 )) (let (( x x )) x))");
+    
+    System.out.println("**************** test 18: ((let ((f (lambda (x) x))) f) (let ((x 4)) x)) **************************");                  
+    RunCommand("((let ((f (lambda (x) x))) f) (let ((x 4)) x))");
+
+    System.out.println("**************** test 19: (let (( x 3)) (let ((f (lambda (y) (+ x y)))) (f 4))**************************");                  
+    RunCommand("(let (( x 3)) (let ((f (lambda (y) (+ x y)))) (f 4)))");
+
+    System.out.println("**************** test 20: (let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10)))) ************");
+    RunCommand("(let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10))))");
 
   }
   
@@ -229,7 +273,7 @@ void FunctionExpr() :
 {
  <LPAR> LambdaExpr()
 
-(  Num()
+(  Num() | Identifier()
 
    | (   LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(3) NamedFunctionApp() )
 
@@ -271,10 +315,8 @@ void LambdaExpr() :
     <RPAR>
 // get body
 (  Num()
-   | (   LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(3) NamedFunctionApp() )
+   | Identifier() |   LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(3) NamedFunctionApp() )
  
-
-)
 
     <RPAR>
 }

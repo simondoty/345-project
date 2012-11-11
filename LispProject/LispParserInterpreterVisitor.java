@@ -4,7 +4,7 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
 {
   private int indent = 0;
   
-
+  
   
   private ArrayList<TreeMap <String, Object>> env = new ArrayList< TreeMap<String, Object>>();
   
@@ -15,7 +15,11 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     }
     return sb.toString();
   }
-
+  
+  public ArrayList getEnv() { 
+    return env;
+  }
+   
   // *********************************************************************
   public Object visit(SimpleNode node, Object data) {
     //System.out.println(indentString() + node +
@@ -29,12 +33,12 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
   // *********************************************************************
   public Object visit(ASTProgram node, Object data) {
     //System.out.println(indentString() + node);
-    ++indent;
+  /*  ++indent;
     data = node.childrenAccept(this, data);
-    --indent;
+    --indent; */
     //return data;
     
-    return node.jjtGetChild(0).jjtAccept(this, data);    
+    return  node.jjtGetChild(0).jjtAccept(this, data);    
     
   }
 
@@ -48,7 +52,9 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
       for(int iChild=0;iChild < node.jjtGetNumChildren(); iChild++) {
       
         Node chile = node.jjtGetChild(iChild);
+        
         Object result = chile.jjtAccept(this, data);
+        System.out.println("printing addition operand... " +  result);
         
         sum += (Double) result;
         
@@ -123,8 +129,9 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     //System.out.println( test.jjtGetChild(1).jjtGetChild(0));
     app.jjtAddChild((Node) node.jjtGetChild(0).jjtAccept(this, data), 0);
     app.jjtAddChild((Node) node.jjtGetChild(1), 1);   
-    
-    return app.jjtAccept(this, data);
+    Object toRet = app.jjtAccept(this, data);
+    env.remove(env.size() - 1);
+    return toRet;
   }
 
   // FOR CHANGING TO DYNAMIC SCOPING, YOU MAY JUST HAVE TO TRAVERSE THROUGH

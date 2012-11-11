@@ -78,6 +78,17 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, Lisp
 
       // interpret the AST
       LispParserVisitor i = new LispParserInterpreterVisitor();
+
+      // get arraylist env
+      /*
+      ArrayList<TreeMap<String, Object>> env = i.getEnv();
+      for(int j = 0; j < env.size(); j++) {
+      
+        System.out.println("arraylist index "  + j
+      
+      }
+      */
+
       System.out.println("Interpreted Result: " + root.jjtAccept(i, null) );
 
 
@@ -111,6 +122,39 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, Lisp
     RunCommand("(let ((x 3)) (* x x x x))");
     System.out.println("**************** test 9: (let ((x 10)) (let ((y 20)) (+ x y)        )) **************************");
     RunCommand("(let ((x 10)) (let ((y 20)) (+ x y)        ))");
+
+    System.out.println("**************** test 10: (let (( x (+ 5 5) )) (+ x x)) **************************");
+    RunCommand("(let (( x (+ 5 5) )) (+ x x))");
+
+    System.out.println("**************** test 11: (let (( x (+ 5 5) )) (let (( y (- x 3) )) (+ y y) ))   )) **************************");
+    RunCommand("(let (( x (+ 5 5) )) (let (( y (- x 3) )) (+ y y) ))");
+
+    System.out.println("**************** test 12: (let (( x 5 )) (let (( y (- x 3) )) (+ y y) ))   )) **************************");
+    RunCommand("(let (( x 5 )) (let (( y (- x 3) )) (+ y y) ))");
+
+    System.out.println("**************** test 13: (let (( x 5)) (+ x (let ((x 3)) 10)))      )) **************************");
+    RunCommand("(let (( x 5)) (+ x (let ((x 3)) 10)))");
+
+    System.out.println("**************** test 14: (let ((x 5)) (+ x (let (( x 3)) x)))   )) **************************");
+    RunCommand("(let ((x 5)) (+ x (let (( x 3)) x)))");
+
+    System.out.println("**************** test 15: (let (( x 5)) (+ x (let (( y 3 )) x)))    )) **************************");
+    RunCommand("(let (( x 5)) (+ x (let (( y 3 )) x)))");
+
+    System.out.println("**************** test 16: (let (( x 5)) (let (( y x )) y))   )) **************************");
+    RunCommand("(let (( x 5)) (let (( y x )) y))");
+
+    System.out.println("**************** test 17: (let (( x 5 )) (let (( x x )) x)))) **************************");
+    RunCommand("(let (( x 5 )) (let (( x x )) x))");
+
+    System.out.println("**************** test 18: ((let ((f (lambda (x) x))) f) (let ((x 4)) x)) **************************");
+    RunCommand("((let ((f (lambda (x) x))) f) (let ((x 4)) x))");
+
+    System.out.println("**************** test 19: (let (( x 3)) (let ((f (lambda (y) (+ x y)))) (f 4))**************************");
+    RunCommand("(let (( x 3)) (let ((f (lambda (y) (+ x y)))) (f 4)))");
+
+    System.out.println("**************** test 20: (let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10)))) ************");
+    RunCommand("(let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((d/dx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (d/dx 10))))");
 
   }
 
@@ -214,6 +258,9 @@ void FunctionApp() :
       case DOUBLE:
       case INTEGER:
         Num();
+        break;
+      case IDENTIFIER:
+        Identifier();
         break;
       case LPAR:
         if (jj_2_5(2)) {
@@ -344,7 +391,11 @@ void FunctionApp() :
       case INTEGER:
         Num();
         break;
-      case LPAR:
+      case IDENTIFIER:
+        Identifier();
+        break;
+      default:
+        jj_la1[5] = jj_gen;
         if (jj_2_12(2)) {
           LambdaExpr();
         } else if (jj_2_13(3)) {
@@ -357,11 +408,6 @@ void FunctionApp() :
           jj_consume_token(-1);
           throw new ParseException();
         }
-        break;
-      default:
-        jj_la1[5] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
       }
       jj_consume_token(RPAR);
     } catch (Throwable jjte000) {
@@ -757,8 +803,137 @@ void FunctionApp() :
     finally { jj_save(22, xla); }
   }
 
+  private boolean jj_3_8() {
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_5() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  private boolean jj_3_17() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
+  private boolean jj_3_21() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(LAMBDA)) return true;
+    return false;
+  }
+
+  private boolean jj_3_13() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
+  private boolean jj_3_11() {
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  private boolean jj_3_20() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(LET)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_8() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_20()) {
+    jj_scanpos = xsp;
+    if (jj_3_21()) {
+    jj_scanpos = xsp;
+    if (jj_3_22()) {
+    jj_scanpos = xsp;
+    if (jj_3_23()) {
+    jj_scanpos = xsp;
+    if (jj_3R_13()) {
+    jj_scanpos = xsp;
+    if (jj_3R_14()) {
+    jj_scanpos = xsp;
+    if (jj_3R_15()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_19() {
+    if (jj_scan_token(DOUBLE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_18() {
+    if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_17() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_18()) {
+    jj_scanpos = xsp;
+    if (jj_3R_19()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    if (jj_3R_6()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_16() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
   private boolean jj_3_12() {
     if (jj_3R_4()) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  private boolean jj_3_16() {
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  private boolean jj_3_10() {
+    if (jj_3R_6()) return true;
+    return false;
+  }
+
+  private boolean jj_3_19() {
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  private boolean jj_3_15() {
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_6() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(OP)) return true;
     return false;
   }
 
@@ -772,18 +947,8 @@ void FunctionApp() :
     return false;
   }
 
-  private boolean jj_3_15() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
   private boolean jj_3_6() {
     if (jj_3R_5()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_15() {
-    if (jj_scan_token(IDENTIFIER)) return true;
     return false;
   }
 
@@ -793,8 +958,18 @@ void FunctionApp() :
     return false;
   }
 
+  private boolean jj_3R_15() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
   private boolean jj_3R_14() {
     if (jj_scan_token(DOUBLE)) return true;
+    return false;
+  }
+
+  private boolean jj_3_9() {
+    if (jj_3R_5()) return true;
     return false;
   }
 
@@ -808,8 +983,8 @@ void FunctionApp() :
     return false;
   }
 
-  private boolean jj_3_9() {
-    if (jj_3R_5()) return true;
+  private boolean jj_3_14() {
+    if (jj_3R_6()) return true;
     return false;
   }
 
@@ -864,141 +1039,12 @@ void FunctionApp() :
     return false;
   }
 
-  private boolean jj_3_14() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
   private boolean jj_3_5() {
     if (jj_3R_4()) return true;
     return false;
   }
 
   private boolean jj_3_22() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_scan_token(OP)) return true;
-    return false;
-  }
-
-  private boolean jj_3_17() {
-    if (jj_3R_5()) return true;
-    return false;
-  }
-
-  private boolean jj_3_8() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
-  private boolean jj_3_21() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_scan_token(LAMBDA)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_5() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    if (jj_3R_5()) return true;
-    return false;
-  }
-
-  private boolean jj_3_20() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_scan_token(LET)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_8() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_20()) {
-    jj_scanpos = xsp;
-    if (jj_3_21()) {
-    jj_scanpos = xsp;
-    if (jj_3_22()) {
-    jj_scanpos = xsp;
-    if (jj_3_23()) {
-    jj_scanpos = xsp;
-    if (jj_3R_13()) {
-    jj_scanpos = xsp;
-    if (jj_3R_14()) {
-    jj_scanpos = xsp;
-    if (jj_3R_15()) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3_11() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
-  private boolean jj_3_13() {
-    if (jj_3R_5()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_19() {
-    if (jj_scan_token(DOUBLE)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_18() {
-    if (jj_scan_token(INTEGER)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_17() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_18()) {
-    jj_scanpos = xsp;
-    if (jj_3R_19()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3_7() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_16() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  private boolean jj_3_16() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
-  private boolean jj_3_1() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  private boolean jj_3_10() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
-  private boolean jj_3_19() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_6() {
     if (jj_scan_token(LPAR)) return true;
     if (jj_scan_token(OP)) return true;
     return false;
@@ -1021,7 +1067,7 @@ void FunctionApp() :
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x1600,0x1600,0x1800,0x600,0x800,0x1600,0xe00,0x1e00,0x600,0x1e00,0x1e00,0xe00,};
+      jj_la1_0 = new int[] {0x1600,0x1e00,0x1800,0x600,0x800,0xe00,0xe00,0x1e00,0x600,0x1e00,0x1e00,0xe00,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[23];
   private boolean jj_rescan = false;
