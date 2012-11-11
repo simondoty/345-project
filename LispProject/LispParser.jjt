@@ -91,6 +91,10 @@ public class LispParser {
       root.jjtAccept(v, null);
       
       System.out.println("----------------------");
+      LispParserVisitor e = new LispParserEnvironmentVisitor();
+      System.out.println(root.jjtAccept(e, null));
+      
+      System.out.println("----------------------");
       
       // interpret the AST
       LispParserVisitor i = new LispParserInterpreterVisitor();

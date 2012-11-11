@@ -75,6 +75,10 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, Lisp
       root.jjtAccept(v, null);
 
       System.out.println("----------------------");
+      LispParserVisitor e = new LispParserEnvironmentVisitor();
+      System.out.println(root.jjtAccept(e, null));
+
+      System.out.println("----------------------");
 
       // interpret the AST
       LispParserVisitor i = new LispParserInterpreterVisitor();
@@ -154,7 +158,7 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, Lisp
     RunCommand("(let (( x 3)) (let ((f (lambda (y) (+ x y)))) (f 4)))");
 
     System.out.println("**************** test 20: (let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10)))) ************");
-    RunCommand("(let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((d/dx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (d/dx 10))))");
+    RunCommand("(let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10))))");
 
   }
 
