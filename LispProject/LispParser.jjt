@@ -22,6 +22,7 @@ import java.util.Scanner;
 
 public class LispParser {
   public static void main(String args[]) {
+  
     System.out.println("Welcome to Lisp Parser. Type commands or quit.");
 
     boolean bQuit = false;
@@ -34,10 +35,10 @@ public class LispParser {
       Scanner scanIn = new Scanner(System.in);
       sInput = scanIn.nextLine();
       
-      if(sInput.equals("quit"))
+      if(sInput.equals("quit") || sInput.equals("q"))
         bQuit = true;
 
-      else if(sInput.equals("test")) {
+      else if(sInput.equals("test") || sInput.equals("t")) {
         RunTests(); 
      
       } else {                    
@@ -52,12 +53,37 @@ public class LispParser {
   }
   
   // *************************************************************************
+  // try convert all let to lambda
+  public static String PreProcess(String sCommand_) {
+      InputStream parseStream = new ByteArrayInputStream(sCommand_.getBytes());
+  
+      LispParser lp = new LispParser(parseStream);
+  
+      String firstParseRes = null;
+      try
+      {
+
+          firstParseRes = lp.lambdaExpr();
+          System.out.println(firstParseRes);
+      } catch (Exception e)
+      {
+          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+      
+      return firstParseRes;
+      
+  }  
+  
+  // *************************************************************************
   public static void RunCommand(String sCommand_) {
     try {
-  
+      String sProcessed = PreProcess(sCommand_);
       // build ast from stream created from the input command
-      InputStream in = new ByteArrayInputStream(sCommand_.getBytes());          
-      LispParser p = new LispParser(in);        
+      InputStream in = new ByteArrayInputStream(sProcessed.getBytes());                
+      LispParser p = new LispParser(in);
+
+
+            
       ASTProgram root = p.Program();
       
       // print the AST
@@ -91,8 +117,16 @@ public class LispParser {
     RunCommand("(* 7 9)");
     System.out.println("**************** test 5: (+ 3 4 (* 7 (- 4 2))) **************************");                  
     RunCommand("(+ 3 4 (* 7 (- 4 2)))");
-    System.out.println("**************** test 6: (lambda (y) (+ 3 (- 4 3))) **************************");                  
+    System.out.println("**************** test 6: ((lambda (x) (+ 3 x 4)) 5) **************************");                  
+    RunCommand("((lambda (x) (+ 3 x 4)) 5)");
+    System.out.println("**************** test 7: (lambda (y) (+ 3 (- 4 3))) **************************");                  
     RunCommand("(lambda (y) (+ 3 (- 4 3)))");
+    System.out.println("**************** test 8: (let ((x 3)) (+ x 3)) **************************");                  
+    RunCommand("(lambda (y) (+ 3 (- 4 3)))");
+    System.out.println("**************** test 8: (let ((x 3)) (* x x x x)) **************************");                  
+    RunCommand("(let ((x 3)) (* x x x x))");
+    System.out.println("**************** test 9: (let ((x 10)) (let ((y 20)) (+ x y)        )) **************************");                  
+    RunCommand("(let ((x 10)) (let ((y 20)) (+ x y)        ))");
 
   }
   
@@ -112,11 +146,20 @@ SKIP :
 }
 
 // ***************************************************************************
-TOKEN:
+TOKEN : /* LITERALS */
 {
     < LAMBDA : "lambda" >
   | < LET    : "let" >
-  | < LPAR   : "(" >
+  | < INTEGER         :  (<DIGIT>)+ >
+  | < IDENTIFIER    :  <LETTER> (<DIGIT> | <LETTER> | <UNDERSCORE> | <SYMBOL>)* >  
+  
+}
+
+// ***************************************************************************
+TOKEN:
+{
+
+   < LPAR   : "(" >
   | < RPAR   : ")" >
   | < SEMI   : ";" >
   | < OP: ["+", "-", "*", "/"] >
@@ -127,14 +170,6 @@ TOKEN:
                         "*", "_", "-", "=", "+", "{", "}", "[", "]", "|", "\\", ":",
                         ";", "<", ">", ",", ".", "?", "'", "\""] >
 
-}
-
-// ***************************************************************************
-TOKEN : /* LITERALS */
-{
-  < INTEGER         :  <DIGIT> (<DIGIT>)* >
-  | < IDENTIFIER    :  <LETTER> (<DIGIT> | <LETTER> | <UNDERSCORE>)* >  
-  
 }
 
 // ***************************************************************************
@@ -149,7 +184,7 @@ ASTProgram Program() : {}
 {
 
 (  Num()
-   | (   LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr())
+   | (   LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(3) FunctionExpr() | LOOKAHEAD(2) ArithExpr() | LOOKAHEAD(3) NamedFunctionApp() )
     
 )
       
@@ -180,7 +215,13 @@ LOOKAHEAD(2)
 }
 
 */
-
+/*
+void FunctionApp() :
+{}
+{
+  <LPAR> FunctionExpr() FunctionExpr() <RPAR>
+}
+*/
 // ***************************************************************************
 void FunctionExpr() :
 {}
@@ -205,10 +246,10 @@ void FunctionExpr() :
 void NamedFunctionApp() :
 {}
 {
-<LPAR> Identifier() 
+<LPAR> (Identifier() | FunctionExpr())
 
 //( 
-Num()
+(Num() | FunctionExpr())
 
   //| ( LOOKAHEAD(2) LambdaExpr() | LOOKAHEAD(2) FunctionExpr() | ArithExpr() | Identifier() )
   
@@ -249,10 +290,10 @@ void ArithExpr(): { Token t; String s; }
 }
 
 // ***************************************************************************
-void Identifier(): 
+String Identifier(): 
 { Token t; }
 {
-  t = <LETTER> { jjtThis.setIdentifier(t.image); }
+  t = <IDENTIFIER> { jjtThis.setIdentifier(t.image); return t.image;}
 
 }
 
@@ -262,4 +303,47 @@ void Num():
 {
   t = <INTEGER> { jjtThis.setVal(Integer.parseInt(t.image)); }
 
+}
+
+String lambdaExpr() #void :
+{
+  Token n; 
+  String v;
+}
+{
+/* CASE : LET; current form: (let (( param  lambdaExpr )) lambdaExpr ) */
+    LOOKAHEAD(2) <LPAR>
+                 <LET>
+                 <LPAR><LPAR>   { String A = "((lambda (" + Identifier() + ") ";
+                                  String B = lambdaExpr(); }
+                 <RPAR><RPAR>   { String C = lambdaExpr(); }
+                 <RPAR>         { A += C + ") " + B + ")"; return A; }
+
+/* CASE : LAMBDA; current form: (lambda ( param ) lambdaExpr )*/
+  | LOOKAHEAD(2) <LPAR>
+                 <LAMBDA>
+                 <LPAR>     { String A = "(lambda (" + Identifier() + ") "; }
+                 <RPAR>     { A += lambdaExpr() + ")"; }
+                 <RPAR>     { return A; }
+
+
+/* CASE : OPeration; current form: ( <OP> lambdaExpr (lambdaExpr)+ )
+            E.g. (+ 3 3) ; (* 3 5 6 8); etc.            */
+  | LOOKAHEAD(2) <LPAR>
+             n = <OP>       { String B = "(" + n.toString() + " " + lambdaExpr(); }
+           ( v = lambdaExpr()     { B += " " + v; }  )+
+                 <RPAR>     { B += ")"; return B; }
+
+/* CASE : Function Application; current form: ( (lambdaExpr)+ ) <== Warning: VERY GENERAL
+            E.g. (F1 2 5) ; (23 ** 2| 3) <-Goes Through! */
+  | LOOKAHEAD(2) <LPAR>
+             v = lambdaExpr()     { String app = "(" + v; }
+           ( v = lambdaExpr()     { app += " " + v; } )*
+                 <RPAR>     { app += ")"; return app; }
+
+/* CASE : NUMBER: could be Positive, Negative, Float, or Integer */
+  |          n = <INTEGER>   { String B = n.toString(); return B; } 
+
+/* CASE : SYMBOL: anything but Parentheses */
+  |          n = <IDENTIFIER>   { String C = n.toString(); return C; }
 }

@@ -8,6 +8,7 @@ public interface LispParserTreeConstants
   public int JJTARITHEXPR = 4;
   public int JJTIDENTIFIER = 5;
   public int JJTNUM = 6;
+  public int JJTVOID = 7;
 
 
   public String[] jjtNodeName = {
@@ -18,6 +19,7 @@ public interface LispParserTreeConstants
     "ArithExpr",
     "Identifier",
     "Num",
+    "void",
   };
 }
-/* JavaCC - OriginalChecksum=244916f976d1f8aa45cb343f0e9d005b (do not edit this line) */
+/* JavaCC - OriginalChecksum=fdaa025809cbc8c86f6f7ce102d295f8 (do not edit this line) */
