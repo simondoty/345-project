@@ -1,5 +1,7 @@
 /* Interpreter Visitor */
 import java.util.*;
+import java.text.DecimalFormat;
+
 public class LispParserEnvironmentVisitor implements LispParserVisitor
 {
   private StringBuilder sb = new StringBuilder("(mtSub)");
@@ -23,64 +25,67 @@ public class LispParserEnvironmentVisitor implements LispParserVisitor
     String sOp = node.getOp();
     
     if(sOp.equals("+")) {
-      sTemp = "(+ ";
+      sTemp += "(+";
             
       for(int iChild=0;iChild < node.jjtGetNumChildren(); iChild++) {
       
         Node chile = node.jjtGetChild(iChild);        
-        Object result = chile.jjtAccept(this, data);        
+        sTemp += " " + chile.jjtAccept(this, data);        
         
       }
       
-      sTemp = sTemp + ")";
+      sTemp += ")";
       return sTemp;
     
     } else if(sOp.equals("-")) {
-      sTemp = "(- ";
+      sTemp += "(-";
       
-      for(int iChild=1;iChild < node.jjtGetNumChildren(); iChild++) {
-    		Object result = node.jjtGetChild(iChild).jjtAccept(this, data);      
+      for(int iChild=0;iChild < node.jjtGetNumChildren(); iChild++) {
+    		sTemp += " " + node.jjtGetChild(iChild).jjtAccept(this, data);      
         
       }
       
-      sTemp = sTemp + ")";
+      sTemp += ")";
       return sTemp;
        
     } else if(sOp.equals("*")) {
-      sTemp = "(* ";    
+      sTemp += "(*";    
     
       for(int iChild=0;iChild < node.jjtGetNumChildren(); iChild++) {
-    		Object result = node.jjtGetChild(iChild).jjtAccept(this, data);      
+    	  sTemp += " " + node.jjtGetChild(iChild).jjtAccept(this, data);      
         
       }
 
-      sTemp = sTemp + ")";
+      sTemp += ")";
       return sTemp;
           
     } else if(sOp.equals("/")) {
-      sTemp = "(/ ";    
+      sTemp += "(/";    
       
-      for(int iChild=1;iChild < node.jjtGetNumChildren(); iChild++) {
-    		Object result = node.jjtGetChild(iChild).jjtAccept(this, data);      
+      for(int iChild=0;iChild < node.jjtGetNumChildren(); iChild++) {
+    		sTemp += " " + node.jjtGetChild(iChild).jjtAccept(this, data);      
         
       }
 
-      sTemp = sTemp + ")";
+      sTemp += sTemp + ")";
       return sTemp;
           
     } else {
-      return null;
+      return "";
     
     }
-    
-    return null;
     
   }
 
   // *********************************************************************
-  	public Object visit(ASTNum node, Object data) {
+	public Object visit(ASTNum node, Object data) {
+    // trim zeroes  
+    Object n = node.getVal();
+    DecimalFormat df = new DecimalFormat("#.###");  
+    n = df.format(n);     	
+  	
     //since this is a num, just return value
-    return node.getVal();
+    return n;
     
   }
   
@@ -111,9 +116,8 @@ public class LispParserEnvironmentVisitor implements LispParserVisitor
     env.remove(env.size() - 1);
     return toRet;
     */
-    /*
+    
     return null;
-    */
     
   }
 
@@ -137,6 +141,7 @@ public class LispParserEnvironmentVisitor implements LispParserVisitor
   // Child 1   = Anything() = Num()        = 3                ==> arg
   
   public Object visit(ASTFunctionExpr node, Object data) {
+  /*
     String sOld = sb.toString();
 
     ASTIdentifier param = (ASTIdentifier) node.jjtGetChild(0).jjtGetChild(0);
@@ -164,7 +169,11 @@ public class LispParserEnvironmentVisitor implements LispParserVisitor
     sNew = sNew + ")";
 
     return sNew;
-  
+    
+   */
+   return null;
+
   }
-  
+
+     
 }

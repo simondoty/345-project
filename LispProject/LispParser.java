@@ -2,6 +2,7 @@
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Scanner;
+import java.text.DecimalFormat;
 
 
 public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, LispParserConstants {/*@bgen(jjtree)*/
@@ -84,8 +85,16 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, Lisp
       LispParserVisitor i = new LispParserInterpreterVisitor();
 
       // get arraylist env     
+      Object result = root.jjtAccept(i, null);
 
-      System.out.println("Interpreted Result: " + root.jjtAccept(i, null) );
+      // *** remove trailing zeroes if a number ***
+      if(result instanceof Integer || result instanceof Double) {
+        DecimalFormat df = new DecimalFormat("#.###");
+        result = df.format(result);
+
+      }
+
+      System.out.println("Interpreted Result: " + result );
 
 
     } catch (Exception e) {
@@ -100,56 +109,56 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, Lisp
   public static void RunTests() {
     System.out.println("**************** test 1: 5 **************************");
     RunCommand("5");
-    System.out.println("**************** test 2: (+ 3 4 5) **************************");
+    System.out.println("\u005cn\u005cn**************** test 2: (+ 3 4 5) **************************");
     RunCommand("(+ 3 4 5)");
-    System.out.println("**************** test 3: (- 3 1) **************************");
+    System.out.println("\u005cn\u005cn**************** test 3: (- 3 1) **************************");
     RunCommand("(- 3 1)");
-    System.out.println("**************** test 4: (* 7 9) **************************");
+    System.out.println("\u005cn\u005cn**************** test 4: (* 7 9) **************************");
     RunCommand("(* 7 9)");
-    System.out.println("**************** test 5: (+ 3 4 (* 7 (- 4 2))) **************************");
+    System.out.println("\u005cn\u005cn**************** test 5: (+ 3 4 (* 7 (- 4 2))) **************************");
     RunCommand("(+ 3 4 (* 7 (- 4 2)))");
-    System.out.println("**************** test 6: ((lambda (x) (+ 3 x 4)) 5) **************************");
+    System.out.println("\u005cn\u005cn**************** test 6: ((lambda (x) (+ 3 x 4)) 5) **************************");
     RunCommand("((lambda (x) (+ 3 x 4)) 5)");
-    System.out.println("**************** test 7: (lambda (y) (+ 3 (- 4 3))) **************************");
+    System.out.println("\u005cn\u005cn**************** test 7: (lambda (y) (+ 3 (- 4 3))) **************************");
     RunCommand("(lambda (y) (+ 3 (- 4 3)))");
-    System.out.println("**************** test 8: (let ((x 3)) (+ x 3)) **************************");
+    System.out.println("\u005cn\u005cn**************** test 8: (let ((x 3)) (+ x 3)) **************************");
     RunCommand("(lambda (y) (+ 3 (- 4 3)))");
-    System.out.println("**************** test 8: (let ((x 3)) (* x x x x)) **************************");
+    System.out.println("\u005cn\u005cn**************** test 8: (let ((x 3)) (* x x x x)) **************************");
     RunCommand("(let ((x 3)) (* x x x x))");
-    System.out.println("**************** test 9: (let ((x 10)) (let ((y 20)) (+ x y)        )) **************************");
+    System.out.println("\u005cn\u005cn**************** test 9: (let ((x 10)) (let ((y 20)) (+ x y)        )) **************************");
     RunCommand("(let ((x 10)) (let ((y 20)) (+ x y)        ))");
 
-    System.out.println("**************** test 10: (let (( x (+ 5 5) )) (+ x x)) **************************");
+    System.out.println("\u005cn\u005cn**************** test 10: (let (( x (+ 5 5) )) (+ x x)) **************************");
     RunCommand("(let (( x (+ 5 5) )) (+ x x))");
 
-    System.out.println("**************** test 11: (let (( x (+ 5 5) )) (let (( y (- x 3) )) (+ y y) ))   )) **************************");
+    System.out.println("\u005cn\u005cn**************** test 11: (let (( x (+ 5 5) )) (let (( y (- x 3) )) (+ y y) ))   )) **************************");
     RunCommand("(let (( x (+ 5 5) )) (let (( y (- x 3) )) (+ y y) ))");
 
-    System.out.println("**************** test 12: (let (( x 5 )) (let (( y (- x 3) )) (+ y y) ))   )) **************************");
+    System.out.println("\u005cn\u005cn**************** test 12: (let (( x 5 )) (let (( y (- x 3) )) (+ y y) ))   )) **************************");
     RunCommand("(let (( x 5 )) (let (( y (- x 3) )) (+ y y) ))");
 
-    System.out.println("**************** test 13: (let (( x 5)) (+ x (let ((x 3)) 10)))      )) **************************");
+    System.out.println("\u005cn\u005cn**************** test 13: (let (( x 5)) (+ x (let ((x 3)) 10)))      )) **************************");
     RunCommand("(let (( x 5)) (+ x (let ((x 3)) 10)))");
 
-    System.out.println("**************** test 14: (let ((x 5)) (+ x (let (( x 3)) x)))   )) **************************");
+    System.out.println("\u005cn\u005cn**************** test 14: (let ((x 5)) (+ x (let (( x 3)) x)))   )) **************************");
     RunCommand("(let ((x 5)) (+ x (let (( x 3)) x)))");
 
-    System.out.println("**************** test 15: (let (( x 5)) (+ x (let (( y 3 )) x)))    )) **************************");
+    System.out.println("\u005cn\u005cn**************** test 15: (let (( x 5)) (+ x (let (( y 3 )) x)))    )) **************************");
     RunCommand("(let (( x 5)) (+ x (let (( y 3 )) x)))");
 
-    System.out.println("**************** test 16: (let (( x 5)) (let (( y x )) y))   )) **************************");
+    System.out.println("\u005cn\u005cn**************** test 16: (let (( x 5)) (let (( y x )) y))   )) **************************");
     RunCommand("(let (( x 5)) (let (( y x )) y))");
 
-    System.out.println("**************** test 17: (let (( x 5 )) (let (( x x )) x)))) **************************");
+    System.out.println("\u005cn\u005cn**************** test 17: (let (( x 5 )) (let (( x x )) x)))) **************************");
     RunCommand("(let (( x 5 )) (let (( x x )) x))");
 
-    System.out.println("**************** test 18: ((let ((f (lambda (x) x))) f) (let ((x 4)) x)) **************************");
+    System.out.println("\u005cn\u005cn**************** test 18: ((let ((f (lambda (x) x))) f) (let ((x 4)) x)) **************************");
     RunCommand("((let ((f (lambda (x) x))) f) (let ((x 4)) x))");
 
-    System.out.println("**************** test 19: (let (( x 3)) (let ((f (lambda (y) (+ x y)))) (f 4))**************************");
+    System.out.println("\u005cn\u005cn**************** test 19: (let (( x 3)) (let ((f (lambda (y) (+ x y)))) (f 4))**************************");
     RunCommand("(let (( x 3)) (let ((f (lambda (y) (+ x y)))) (f 4)))");
 
-    System.out.println("**************** test 20: (let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10)))) ************");
+    System.out.println("\u005cn\u005cn**************** test 20: (let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10)))) ************");
     RunCommand("(let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10))))");
 
   }
@@ -799,31 +808,8 @@ void FunctionApp() :
     finally { jj_save(22, xla); }
   }
 
-  private boolean jj_3_23() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_3R_8()) return true;
-    return false;
-  }
-
-  private boolean jj_3_5() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  private boolean jj_3_22() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_scan_token(OP)) return true;
-    return false;
-  }
-
   private boolean jj_3_8() {
     if (jj_3R_7()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_5() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_3R_4()) return true;
     return false;
   }
 
@@ -835,6 +821,12 @@ void FunctionApp() :
   private boolean jj_3_21() {
     if (jj_scan_token(LPAR)) return true;
     if (jj_scan_token(LAMBDA)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_5() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_3R_4()) return true;
     return false;
   }
 
@@ -919,6 +911,11 @@ void FunctionApp() :
     return false;
   }
 
+  private boolean jj_3_1() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
   private boolean jj_3_16() {
     if (jj_3R_7()) return true;
     return false;
@@ -926,11 +923,6 @@ void FunctionApp() :
 
   private boolean jj_3_10() {
     if (jj_3R_6()) return true;
-    return false;
-  }
-
-  private boolean jj_3_1() {
-    if (jj_3R_4()) return true;
     return false;
   }
 
@@ -1043,6 +1035,23 @@ void FunctionApp() :
     }
     }
     }
+    return false;
+  }
+
+  private boolean jj_3_23() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
+  private boolean jj_3_5() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  private boolean jj_3_22() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(OP)) return true;
     return false;
   }
 

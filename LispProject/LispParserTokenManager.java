@@ -2,6 +2,7 @@
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Scanner;
+import java.text.DecimalFormat;
 
 /** Token Manager. */
 public class LispParserTokenManager implements LispParserConstants
