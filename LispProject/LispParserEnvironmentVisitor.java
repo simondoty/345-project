@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 
 public class LispParserEnvironmentVisitor implements LispParserVisitor
 {
-  private StringBuilder sb = new StringBuilder("(mtSub)");
+  private String sOldEnv = "(mtSub)";
 
      // *********************************************************************
   public Object visit(SimpleNode node, Object data) {
@@ -14,7 +14,9 @@ public class LispParserEnvironmentVisitor implements LispParserVisitor
 
   // *********************************************************************
   public Object visit(ASTProgram node, Object data) {
-    return node.jjtGetChild(0).jjtAccept(this, data);    
+    node.jjtGetChild(0).jjtAccept(this, data);    
+    
+    return sOldEnv;
     
   }
 
@@ -98,26 +100,10 @@ public class LispParserEnvironmentVisitor implements LispParserVisitor
     
   // *********************************************************************
   	public Object visit(ASTNamedFunctionApp node, Object data) {
-    //since this is a num, just return value
-    /*
-    Node app = new ASTFunctionExpr(0);
-    String funcID = (String) node.jjtGetChild(0).jjtAccept(this, data);
-    Node func=  null;
-    for (TreeMap<String, Object> t : env) {
-      if (t.containsKey(funcID)){
-        func = (Node) t.get(funcID);
-      }  
-    }
-    //Node test = (Node) node.jjtGetChild(0).jjtAccept(this, data);
-    //System.out.println( test.jjtGetChild(1).jjtGetChild(0));
-    app.jjtAddChild((Node) node.jjtGetChild(0).jjtAccept(this, data), 0);
-    app.jjtAddChild((Node) node.jjtGetChild(1), 1);   
-    Object toRet = app.jjtAccept(this, data);
-    env.remove(env.size() - 1);
-    return toRet;
-    */
+   
+   
     
-    return null;
+    return "(" + node.jjtGetChild(0).jjtAccept(this, data) + " " + node.jjtGetChild(1).jjtAccept(this, data) + ")";
     
   }
 
@@ -126,7 +112,8 @@ public class LispParserEnvironmentVisitor implements LispParserVisitor
       
   // *********************************************************************
   public Object visit(ASTLambdaExpr node, Object data) {
-    return null;
+    // lambda (x) (+ x 5)
+    return "(closureV " + node.jjtGetChild(0).jjtAccept(this, data) + " " + node.jjtGetChild(1).jjtAccept(this, data) + " " + sOldEnv + ")";
     
   }
   
@@ -140,40 +127,30 @@ public class LispParserEnvironmentVisitor implements LispParserVisitor
   
   // Child 1   = Anything() = Num()        = 3                ==> arg
   
-  public Object visit(ASTFunctionExpr node, Object data) {
-  /*
-    String sOld = sb.toString();
-
+  public Object visit(ASTFunctionExpr node, Object data) {  
+    // get parameter of the lambda we are applying.
     ASTIdentifier param = (ASTIdentifier) node.jjtGetChild(0).jjtGetChild(0);
-    
-    String sNew = "(aSub " + param.getIdentifier();
-
+  
     Node body = node.jjtGetChild(0).jjtGetChild(1);
     
-    if(body instanceof ASTNum) {
-      return body.jjtAccept(this, null);
     
-    } else if(body instanceof ASTLambdaExpr) {
-       String sLambda = "(closureV ";
-
-       sLambda += body.jjtGetChild(0);
-       sLambda +=     
-       return body.jjtAccept(this, null);   
-    
+    // get argument.  argument may be a number or a lambda.
+    Node arg = node.jjtGetChild(1);
+  
+    if ((arg instanceof ASTNum) || (arg instanceof ASTArithExpr) || (arg instanceof ASTIdentifier)) {
+      String sNewEnv = "(aSub " + param.jjtAccept(this, null) + " " + arg.jjtAccept(this, null) + " " + sOldEnv + ")";
+      sOldEnv = sNewEnv;
+      
+    } else if( (arg instanceof ASTLambdaExpr) || (arg instanceof ASTFunctionExpr) ) {
+      String sNewEnv = "(aSub " + param.jjtAccept(this, null) + " " + arg.jjtAccept(this, null) + " " + sOldEnv + ")";
+      sOldEnv = sNewEnv;
     
     }
-        
-    sNew = sNew + body;
-  
-    sNew = sNew + sOld;
-    sNew = sNew + ")";
-
-    return sNew;
     
-   */
-   return null;
-
+    // be sure to recurs into body for more environment building.
+    body.jjtAccept(this, null);
+    return sOldEnv;
+    
   }
-
      
 }

@@ -54,7 +54,7 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
         Node chile = node.jjtGetChild(iChild);
         
         Object result = chile.jjtAccept(this, data);
-        System.out.println("printing addition operand... " +  result);
+        //System.out.println("printing addition operand... " +  result);
         
         sum += (Double) result;
         
@@ -184,7 +184,7 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
     // try adding a String, int map to the env arraylist
     TreeMap<String, Object> pair = new TreeMap<String, Object>();
     pair.put(param.getIdentifier(), arg);    
-    System.out.println("Printing pair added to env: key is:  " + param.getIdentifier() + " and value is:  " + arg);
+//    System.out.println("Printing pair added to env: key is:  " + param.getIdentifier() + " and value is:  " + arg);
     env.add(pair);
      
     // just return self.
@@ -192,29 +192,4 @@ public class LispParserInterpreterVisitor implements LispParserVisitor
   
   }
   
-  /*
-    System.out.println(indentString() + node);
-    ++indent;
-    data = node.childrenAccept(this, data);
-    --indent;
-    return data;
-  */
-
- /*
-      public Object visit(ASTBody node, Object data) {
-    System.out.println(indentString() + node);
-    ++indent;
-    data = node.childrenAccept(this, data);
-    --indent;
-    return data;
-  }
-*/
-
-  /*public Object visit(ASTInteger node, Object data) {
-    System.out.println(indentString() + node);
-    ++indent;
-    data = node.childrenAccept(this, data);
-    --indent;
-    return data;
-  }*/
 }
