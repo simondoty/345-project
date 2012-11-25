@@ -199,6 +199,8 @@ public class LispParser {
     System.out.println("\n\n**************** test 20: (let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10)))) ************");
     RunCommand("(let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10))))");
 
+    System.out.println("\n\n**************** test 21: (let ((y 5)) (let ((f (lambda (x) (+ x y)))) (let ((y 3)) (f 5)))) ************");
+    RunCommand("(let ((y 5)) (let ((f (lambda (x) (+ x y)))) (let ((y 3)) (f 5))))");
   }
   
 }

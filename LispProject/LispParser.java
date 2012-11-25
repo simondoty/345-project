@@ -183,6 +183,8 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, Lisp
     System.out.println("\u005cn\u005cn**************** test 20: (let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10)))) ************");
     RunCommand("(let ((H 0.0001)) (let ((f (lambda (x) (* x x x x)))) (let ((ddx (lambda (x) (/ (- (f (+ x H))(f x)) H)))) (ddx 10))))");
 
+    System.out.println("\u005cn\u005cn**************** test 21: (let ((y 5)) (let ((f (lambda (x) (+ x y)))) (let ((y 3)) (f 5)))) ************");
+    RunCommand("(let ((y 5)) (let ((f (lambda (x) (+ x y)))) (let ((y 3)) (f 5))))");
   }
 
 // ***************************************************************************
@@ -830,11 +832,6 @@ void FunctionApp() :
     finally { jj_save(22, xla); }
   }
 
-  private boolean jj_3R_19() {
-    if (jj_scan_token(DOUBLE)) return true;
-    return false;
-  }
-
   private boolean jj_3R_18() {
     if (jj_scan_token(INTEGER)) return true;
     return false;
@@ -1074,6 +1071,11 @@ void FunctionApp() :
     }
     }
     }
+    return false;
+  }
+
+  private boolean jj_3R_19() {
+    if (jj_scan_token(DOUBLE)) return true;
     return false;
   }
 
