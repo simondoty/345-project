@@ -11,6 +11,7 @@ class ASTNum extends SimpleNode {
     super(p, id);
   }
 
+
 	public void setVal (double i) {
 		value = i;
 	}
