@@ -22,6 +22,8 @@ import java.text.DecimalFormat;
 
 
 public class LispParser {
+  static boolean bStaticScoping = true;
+
   public static void main(String args[]) {
   
     System.out.println("Welcome to Lisp Parser. Type commands or quit.");
@@ -36,11 +38,25 @@ public class LispParser {
       Scanner scanIn = new Scanner(System.in);
       sInput = scanIn.nextLine();
       
-      if(sInput.equals("quit") || sInput.equals("q"))
+      if(sInput.toLowerCase().equals("quit") || sInput.toLowerCase().equals("q")) {
         bQuit = true;
 
-      else if(sInput.equals("test") || sInput.equals("t")) {
+      } else if(sInput.toLowerCase().equals("test") || sInput.toLowerCase().equals("t")) {
         RunTests(); 
+        
+      } else if(sInput.toLowerCase().equals("scoping")) {
+        if(bStaticScoping)
+          System.out.println("SCOPING = STATIC");
+        else      
+          System.out.println("SCOPING = DYNAMIC");
+
+      } else if(sInput.toLowerCase().equals("set scoping static")) {
+        bStaticScoping = true;
+        System.out.println("SCOPING = STATIC");
+        
+      } else if(sInput.toLowerCase().equals("set scoping dynamic")) {
+        bStaticScoping = false;
+        System.out.println("SCOPING = DYNAMIC");
      
       } else {                    
         RunCommand(sInput);
@@ -98,10 +114,16 @@ public class LispParser {
       System.out.println("----------------------");
       
       // interpret the AST
-      LispParserVisitor i = new LispParserInterpreterVisitor();
+      if(bStaticScoping) { 
+        System.out.println("Interpreting with static scoping.");
       
-      // get arraylist env     
-      Object result = root.jjtAccept(i, null);
+      } else {
+        System.out.println("Interpreting with dynamic scoping.");      
+      
+      }
+      
+      LispParserVisitor i = new LispParserInterpreterVisitor();
+      Object result = root.jjtAccept(i, bStaticScoping);
       
       // *** remove trailing zeroes if a number ***
       if(result instanceof Integer || result instanceof Double) {

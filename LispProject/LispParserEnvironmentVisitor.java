@@ -83,7 +83,7 @@ public class LispParserEnvironmentVisitor implements LispParserVisitor
 	public Object visit(ASTNum node, Object data) {
     // trim zeroes  
     Object n = node.getVal();
-    DecimalFormat df = new DecimalFormat("#.###");  
+    DecimalFormat df = new DecimalFormat("#.#####");  
     n = df.format(n);     	
   	
     //since this is a num, just return value

@@ -6,7 +6,9 @@ import java.text.DecimalFormat;
 
 
 public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, LispParserConstants {/*@bgen(jjtree)*/
-  protected JJTLispParserState jjtree = new JJTLispParserState();public static void main(String args[]) {
+  protected JJTLispParserState jjtree = new JJTLispParserState();static boolean bStaticScoping = true;
+
+  public static void main(String args[]) {
 
     System.out.println("Welcome to Lisp Parser. Type commands or quit.");
 
@@ -20,11 +22,25 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, Lisp
       Scanner scanIn = new Scanner(System.in);
       sInput = scanIn.nextLine();
 
-      if(sInput.equals("quit") || sInput.equals("q"))
+      if(sInput.toLowerCase().equals("quit") || sInput.toLowerCase().equals("q")) {
         bQuit = true;
 
-      else if(sInput.equals("test") || sInput.equals("t")) {
+      } else if(sInput.toLowerCase().equals("test") || sInput.toLowerCase().equals("t")) {
         RunTests();
+
+      } else if(sInput.toLowerCase().equals("scoping")) {
+        if(bStaticScoping)
+          System.out.println("SCOPING = STATIC");
+        else
+          System.out.println("SCOPING = DYNAMIC");
+
+      } else if(sInput.toLowerCase().equals("set scoping static")) {
+        bStaticScoping = true;
+        System.out.println("SCOPING = STATIC");
+
+      } else if(sInput.toLowerCase().equals("set scoping dynamic")) {
+        bStaticScoping = false;
+        System.out.println("SCOPING = DYNAMIC");
 
       } else {
         RunCommand(sInput);
@@ -82,10 +98,16 @@ public class LispParser/*@bgen(jjtree)*/implements LispParserTreeConstants, Lisp
       System.out.println("----------------------");
 
       // interpret the AST
-      LispParserVisitor i = new LispParserInterpreterVisitor();
+      if(bStaticScoping) {
+        System.out.println("Interpreting with static scoping.");
 
-      // get arraylist env     
-      Object result = root.jjtAccept(i, null);
+      } else {
+        System.out.println("Interpreting with dynamic scoping.");
+
+      }
+
+      LispParserVisitor i = new LispParserInterpreterVisitor();
+      Object result = root.jjtAccept(i, bStaticScoping);
 
       // *** remove trailing zeroes if a number ***
       if(result instanceof Integer || result instanceof Double) {
@@ -808,74 +830,6 @@ void FunctionApp() :
     finally { jj_save(22, xla); }
   }
 
-  private boolean jj_3_8() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
-  private boolean jj_3_17() {
-    if (jj_3R_5()) return true;
-    return false;
-  }
-
-  private boolean jj_3_21() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_scan_token(LAMBDA)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_5() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  private boolean jj_3_13() {
-    if (jj_3R_5()) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    if (jj_3R_5()) return true;
-    return false;
-  }
-
-  private boolean jj_3_11() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
-  private boolean jj_3_20() {
-    if (jj_scan_token(LPAR)) return true;
-    if (jj_scan_token(LET)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_8() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_20()) {
-    jj_scanpos = xsp;
-    if (jj_3_21()) {
-    jj_scanpos = xsp;
-    if (jj_3_22()) {
-    jj_scanpos = xsp;
-    if (jj_3_23()) {
-    jj_scanpos = xsp;
-    if (jj_3R_13()) {
-    jj_scanpos = xsp;
-    if (jj_3R_14()) {
-    jj_scanpos = xsp;
-    if (jj_3R_15()) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
   private boolean jj_3R_19() {
     if (jj_scan_token(DOUBLE)) return true;
     return false;
@@ -1052,6 +1006,74 @@ void FunctionApp() :
   private boolean jj_3_22() {
     if (jj_scan_token(LPAR)) return true;
     if (jj_scan_token(OP)) return true;
+    return false;
+  }
+
+  private boolean jj_3_8() {
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_5() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  private boolean jj_3_17() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
+  private boolean jj_3_21() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(LAMBDA)) return true;
+    return false;
+  }
+
+  private boolean jj_3_13() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
+  private boolean jj_3_11() {
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  private boolean jj_3_20() {
+    if (jj_scan_token(LPAR)) return true;
+    if (jj_scan_token(LET)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_8() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_20()) {
+    jj_scanpos = xsp;
+    if (jj_3_21()) {
+    jj_scanpos = xsp;
+    if (jj_3_22()) {
+    jj_scanpos = xsp;
+    if (jj_3_23()) {
+    jj_scanpos = xsp;
+    if (jj_3R_13()) {
+    jj_scanpos = xsp;
+    if (jj_3R_14()) {
+    jj_scanpos = xsp;
+    if (jj_3R_15()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
     return false;
   }
 
